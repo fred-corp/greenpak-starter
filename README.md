@@ -53,3 +53,11 @@ verified, Go-Configure-extracted device registers (SLG46826/46824).
 Matrix connection bits are still being finalized upstream - see the
 main analysis repo. Shadow-mode flashing is reversible and safe;
 OTP mode requires datasheet verification before first use.
+
+## License & Acknowledgements
+
+Made with ❤️, lots of ☕️, and lack of 🛏️
+
+Published under GNU AGPLv3  
+[![License: AGPL v3](https://www.gnu.org/graphics/agplv3-155x51.png)](https://www.gnu.org/licenses/agpl-3.0.en.html)  
+[GNU AGPLv3](https://www.gnu.org/licenses/agpl-3.0.en.html)
