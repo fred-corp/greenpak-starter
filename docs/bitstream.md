@@ -317,3 +317,30 @@ The official register map confirms the extracted model bit-for-bit:
   bits 1191:1184; the extractor's slot 0x720 produced an over-inclusive
   16-bit run (1168-1183) - the LUT3 slots shift by one; to fix in
   extract_lut_regs.py consecutive-run handling
+
+## Datasheet cross-checks (SLG47004, SLG46824, SLG47910)
+
+SLG47004 (ForgeFPGA, dial_s_a0011480684, Table 68):
+- matrix fields identical in structure: bits 5:0 = "OUT0: IN0 of
+  LUT2_0" (6-bit LSB-first fields from bit 0)
+- "2-Bit LUT0 is defined by registers [1483:1480]" - EXACT match
+  with the extracted truth bits [1480..1483]; LUT1 [1487:1484],
+  LUT2 [1491:1488] all match; output select register [1492] matches
+  the extracted out=1492
+- open item: SLG47004's register map shows matrix fields from bit 0,
+  but REG_ADDRESS_MUX special-cases family 0x25 with base 0x28 -
+  needs the DefinedRevisions mapping for SLG47004 to resolve which
+  family code it is.
+
+SLG46824 (ds 2v0):
+- register map IDENTICAL to SLG46826: "2-Bit LUT0 defined by
+  reg<1155:1152>", output select reg<1232>, PGEN reg<1167:1164> -
+  the shared-register-map variant handling is datasheet-confirmed
+  (only the component inventory differs, e.g. no temperature sensor)
+
+SLG47910 (r19ds0120):
+- different architecture: the register map describes SPI/OTP boot
+  configuration (24-bit base address, load-from-OTP/SPI control
+  bits), not the GreenPAK-style matrix - the ForgeFPGA 479xx
+  bitstream needs its own model (the ForgeK2 decompiled classes
+  remain the source)
