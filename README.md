@@ -32,6 +32,12 @@ Pinout constraints go in `pinout.pcf` (`set_io <port> PIN16` or
 Vivado-style `set_property PACKAGE_PIN`). VHDL: `make HDL=vhdl`
 (requires ghdl).
 
+The NVM encoding is datasheet-exact and validated in both directions:
+the register model decodes a real Go Configure design's compiled image
+into its exact intended function, and `bitstream/verify.py` re-decodes
+every assembled image and checks it against the synthesized netlist
+(the template Makefile runs it automatically after assembly).
+
 ## Layout
 
 ```
@@ -40,19 +46,29 @@ tools/build-nextpnr.sh    one-time uarch build
 tools/flash               I2C flasher (shadow mode = reversible)
 uarch/forgefpga           nextpnr-generic Viaduct uarch (greenpak +
                           forgefpga aliases, JSON chipdb driven)
-flow/                    yosys scripts + vendored greenpak4 techlib
-chipdb/                  device databases + generator + extracted
-                          register tables (device_regs/)
+bitstream/                NVM assembler + round-trip verifier
+flow/                     yosys scripts + vendored greenpak4 techlib
+chipdb/                   device databases + generator + extracted
+                          register tables (device_regs/) + default
+                          NVM images (defaultnvm/)
 docs/usage.md             full documentation
 ```
 
 ## Status (honest)
 
-The flow produces images whose LUT truth-table bits land in
-verified, Go-Configure-extracted device registers (SLG46826/46824).
-Matrix connection bits are still being finalized upstream - see the
-main analysis repo. Shadow-mode flashing is reversible and safe;
-OTP mode requires datasheet verification before first use.
+The SLG46826/SLG46824 flow is validated end-to-end for combinational
+logic: LUT truth tables, matrix connections (fields + Matrix Input
+Numbers from datasheet Tables 21/22), pin map and pad output/OE
+fields are datasheet-exact and proven against a real Go
+Configure-compiled design as well as by assembler round-trip.
+
+Not yet hardware-correct: sequential logic (DFF/latch mode
+registers), designs that need the multifunction blocks (MF LUTs),
+and per-pin IO mode configuration. Shadow-mode flashing is reversible
+and safe; OTP mode requires the datasheet programming voltage on VDD
+(see the flasher warning) and a first-hardware-verify before trusting
+it.
+
 
 ## License & Acknowledgements
 

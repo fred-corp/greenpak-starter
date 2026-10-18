@@ -220,6 +220,11 @@ def flash_otp(be, image, addr=I2C_ADDR):
     if len(image) > 256:
         image = image[:256]
     print("WARNING: OTP programming is irreversible.")
+    print("WARNING: the datasheet requires VDD raised to the programming\n"
+          "         voltage for erase/write commands (the 2.3-5.5 V\n"
+          "         operating range is read/verify only). This tool does\n"
+          "         NOT control the supply - the user must provide it;\n"
+          "         erases/writes at normal VDD are out of spec.")
     ERSR = 0xE3
     tWAIT = 0.021
     for page in range(16):

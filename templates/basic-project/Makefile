@@ -43,6 +43,15 @@ else
 UARCH = forgefpga
 endif
 
+# GP6 parts (SLG46824/26) synthesize with greenpak_synth_gp6.ys
+# (abc -lut 3: the GP6 fabric has no standalone 4-bit LUTs); other
+# GreenPAK families use greenpak_synth.ys (abc -lut 4).
+ifneq ($(filter SLG46824% SLG46826%,$(PART)),)
+GYS = greenpak_synth_gp6.ys
+else
+GYS = greenpak_synth.ys
+endif
+
 .PHONY: all clean flash-hex chipdb
 
 all: $(TOP).hex
@@ -72,7 +81,7 @@ ifeq ($(FAMILY),greenpak)
 	sed -e 's|-top top|-top $(TOP)|' \
 	    -e 's|greenpak4/|$(FLOW)/greenpak4/|g' \
 	    -e 's|write_json out.json|write_json $@|' \
-	    $(FLOW)/greenpak_synth.ys > synth_gp4.ys
+	    $(FLOW)/$(GYS) > synth_gp4.ys
 	$(YOSYS_BIN) -s synth_gp4.ys
 else
 	cp $(FLOW)/forgefpga_prims.v $(FLOW)/forgefpga_map.v .
@@ -97,6 +106,8 @@ $(TOP)_routed.rpt: $(TOP)_synth.json $(CHIPDB) $(PCF)
 $(TOP).nvm $(TOP).bin $(TOP).hex: $(TOP)_routed.rpt $(CHIPDB)
 	python3 $(TOOLS)/bitstream/assemble.py \
 	  --chipdb $(CHIPDB) --routed $(TOP)_routed.rpt --out $(TOP)
+	-python3 $(TOOLS)/bitstream/verify.py --chipdb $(CHIPDB) \
+	  --routed $(TOP)_routed.rpt --json $(TOP)_synth.json --image $(TOP).bin
 
 flash-hex: $(TOP).hex
 	@echo "flashable image: $(TOP).hex (Intel HEX) / $(TOP).bin"

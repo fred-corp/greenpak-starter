@@ -27,6 +27,7 @@ Usage:
 
 import argparse
 import json
+import os
 import sys
 
 
@@ -55,21 +56,29 @@ def bits_to_bytes(bits):
 
 # --------------------------------------------------------------- assembler --
 
-def load_default(chipdb):
-    """Start from the device default NVM bits when provided."""
+def load_default(chipdb, chipdb_path):
+    """Start from the device default NVM bits when provided.
+
+    The Go Configure defaultNVM dump is BIT-indexed: one line per NVM
+    bit, "<bitindex> <0|1> //", covering the whole device image.
+    Relative "default" paths resolve against the chipdb file's
+    directory, so chipdbs are relocatable.
+    """
     nvm = chipdb.get('nvm', {})
     bits = [False] * int(nvm.get('bits', 0))
     default = nvm.get('default')
-    if default:
+    if default and not os.path.isabs(default):
+        cand = os.path.join(os.path.dirname(os.path.abspath(chipdb_path)),
+                            default)
+        default = cand if os.path.exists(cand) else default
+    if default and os.path.exists(default):
         with open(default) as f:
             for line in f:
                 parts = line.split()
                 if len(parts) >= 2 and parts[0].isdigit():
                     idx = int(parts[0])
-                    val = int(parts[1])
-                    for b in range(8):
-                        if idx * 8 + b < len(bits):
-                            bits[idx * 8 + b] = bool(val >> b & 1)
+                    if idx < len(bits):
+                        bits[idx] = bool(int(parts[1]) & 1)
     return bits
 
 
@@ -83,12 +92,17 @@ def cell_truth(cell):
     return init
 
 
-def assemble(chipdb, routed):
-    bits = load_default(chipdb)
+def assemble(chipdb, routed, chipdb_path=''):
+    bits = load_default(chipdb, chipdb_path)
     nvm = chipdb.get('nvm', {})
     bel_nvm = {b['name']: b for b in nvm.get('bel_bits', [])}
     pip_nvm = {p['name']: p for p in nvm.get('pip_bits', [])}
-    stats = {'cells': 0, 'pips': 0, 'bits_set': 0}
+    matrix = nvm.get('matrix') or {}
+    fields = matrix.get('fields', {})
+    msrc = matrix.get('sources', {})
+    io_oe = matrix.get('io_oe', {})
+    stats = {'cells': 0, 'pips': 0, 'bits_set': 0,
+             'connections': 0, 'unmapped_pips': 0, 'io_outputs': 0}
 
     def setbit(idx):
         if idx < len(bits):
@@ -134,6 +148,36 @@ def assemble(chipdb, routed):
         if entry and 'bit' in entry:
             stats['pips'] += 1
             setbit(entry['bit'])
+            continue
+        # Switch-matrix connection: dst is a matrix output field
+        # (6-bit), src is a matrix source; write the source's Matrix
+        # Input Number into the field (datasheet Tables 21/22 join).
+        src, dst = pip.get('src'), pip.get('dst')
+        if dst in fields:
+            if src in msrc:
+                lo, _hi = fields[dst]
+                v = msrc[src]
+                for b in range(6):
+                    if (v >> b) & 1:
+                        setbit(lo + b)
+                    else:
+                        clearbit(lo + b)
+                stats['pips'] += 1
+                stats['connections'] += 1
+                if dst in io_oe:
+                    # driving a pad: enable its output (OE = VDD, the
+                    # matrix source 63 - GP_OBUF has no OE port)
+                    oe_lo = io_oe[dst][0]
+                    for b in range(6):
+                        if (63 >> b) & 1:
+                            setbit(oe_lo + b)
+                        else:
+                            clearbit(oe_lo + b)
+                    stats['io_outputs'] += 1
+            else:
+                stats['unmapped_pips'] += 1
+                print('  warn: unmapped matrix source %r -> %r' % (src, dst),
+                      file=sys.stderr)
 
     return bits, stats
 
@@ -148,7 +192,7 @@ def main():
     chipdb = json.load(open(args.chipdb))
     routed = json.load(open(args.routed))
 
-    bits, stats = assemble(chipdb, routed)
+    bits, stats = assemble(chipdb, routed, args.chipdb)
     data = bits_to_bytes(bits)
 
     with open(args.out + '.bin', 'wb') as f:
@@ -160,6 +204,11 @@ def main():
 
     print('assembled %s: %d bits (%d bytes), %d cells mapped, %d bits changed'
           % (args.out, len(bits), len(data), stats['cells'], stats['bits_set']))
+    if chipdb.get('nvm', {}).get('matrix'):
+        print('  matrix connections written: %d (io outputs: %d, '
+              'unmapped sources: %d)'
+              % (stats['connections'], stats['io_outputs'],
+                 stats['unmapped_pips']))
 
 
 if __name__ == '__main__':

@@ -1,0 +1,830 @@
+{
+ "table": "Matrix Output Table (datasheet)",
+ "note": "field for output n = bits [6n, 6n+5]; content = Matrix Input Number (Table 21)",
+ "outputs": [
+  {
+   "output": 0,
+   "function": "IN0 of LUT2_0 or Clock Input of DFF0",
+   "bits": [
+    0,
+    5
+   ]
+  },
+  {
+   "output": 1,
+   "function": "IN1 of LUT2_0 or Data Input of DFF0",
+   "bits": [
+    6,
+    11
+   ]
+  },
+  {
+   "output": 2,
+   "function": "IN0 of LUT2_3 or Clock Input of PGen",
+   "bits": [
+    12,
+    17
+   ]
+  },
+  {
+   "output": 3,
+   "function": "IN1 of LUT2_3 or nRST of PGen",
+   "bits": [
+    18,
+    23
+   ]
+  },
+  {
+   "output": 4,
+   "function": "IN0 of LUT2_1 or Clock Input of DFF1",
+   "bits": [
+    24,
+    29
+   ]
+  },
+  {
+   "output": 5,
+   "function": "IN1 of LUT2_1 or Data Input of DFF1",
+   "bits": [
+    30,
+    35
+   ]
+  },
+  {
+   "output": 6,
+   "function": "IN0 of LUT2_2 or Clock Input of DFF2",
+   "bits": [
+    36,
+    41
+   ]
+  },
+  {
+   "output": 7,
+   "function": "IN1 of LUT2_2 or Data Input of DFF2",
+   "bits": [
+    42,
+    47
+   ]
+  },
+  {
+   "output": 8,
+   "function": "IN0 of LUT3_0 or Clock Input of DFF3",
+   "bits": [
+    48,
+    53
+   ]
+  },
+  {
+   "output": 9,
+   "function": "IN1 of LUT3_0 or Data Input of DFF3",
+   "bits": [
+    54,
+    59
+   ]
+  },
+  {
+   "output": 10,
+   "function": "IN2 of LUT3_0 or nRST(nSET) of DFF3",
+   "bits": [
+    60,
+    65
+   ]
+  },
+  {
+   "output": 11,
+   "function": "IN0 of LUT3_1 or Clock Input of DFF4",
+   "bits": [
+    66,
+    71
+   ]
+  },
+  {
+   "output": 12,
+   "function": "IN1 of LUT3_1 or Data Input of DFF4",
+   "bits": [
+    72,
+    77
+   ]
+  },
+  {
+   "output": 13,
+   "function": "IN2 of LUT3_1 or nRST(nSET) of DFF4",
+   "bits": [
+    78,
+    83
+   ]
+  },
+  {
+   "output": 14,
+   "function": "IN0 of LUT3_2 or Clock Input of DFF5",
+   "bits": [
+    84,
+    89
+   ]
+  },
+  {
+   "output": 15,
+   "function": "IN1 of LUT3_2 or Data Input of DFF5",
+   "bits": [
+    90,
+    95
+   ]
+  },
+  {
+   "output": 16,
+   "function": "IN2 of LUT3_2 or nRST(nSET) of DFF5",
+   "bits": [
+    96,
+    101
+   ]
+  },
+  {
+   "output": 17,
+   "function": "IN0 of LUT3_3 or Clock Input of DFF6",
+   "bits": [
+    102,
+    107
+   ]
+  },
+  {
+   "output": 18,
+   "function": "IN1 of LUT3_3 or Data Input of DFF6",
+   "bits": [
+    108,
+    113
+   ]
+  },
+  {
+   "output": 19,
+   "function": "IN2 of LUT3_3 or nRST(nSET) of DFF6",
+   "bits": [
+    114,
+    119
+   ]
+  },
+  {
+   "output": 20,
+   "function": "IN0 of LUT3_4 or Clock Input of DFF7",
+   "bits": [
+    120,
+    125
+   ]
+  },
+  {
+   "output": 21,
+   "function": "IN1 of LUT3_4 or Data Input of DFF7",
+   "bits": [
+    126,
+    131
+   ]
+  },
+  {
+   "output": 22,
+   "function": "IN2 of LUT3_4 or nRST(nSET) of DFF7",
+   "bits": [
+    132,
+    137
+   ]
+  },
+  {
+   "output": 23,
+   "function": "IN0 of LUT3_5 or Clock Input of DFF8",
+   "bits": [
+    138,
+    143
+   ]
+  },
+  {
+   "output": 24,
+   "function": "IN1 of LUT3_5 or Data Input of DFF8",
+   "bits": [
+    144,
+    149
+   ]
+  },
+  {
+   "output": 25,
+   "function": "IN2 of LUT3_5 or nRST(nSET) of DFF8",
+   "bits": [
+    150,
+    155
+   ]
+  },
+  {
+   "output": 26,
+   "function": "IN0 of LUT3_6 or Input of Pipe Delay or UP Signal of RIPP CNT",
+   "bits": [
+    156,
+    161
+   ]
+  },
+  {
+   "output": 27,
+   "function": "IN1 of LUT3_6 or nRST of Pipe Delay or STB of RIPP CNT",
+   "bits": [
+    162,
+    167
+   ]
+  },
+  {
+   "output": 28,
+   "function": "IN2 of LUT3_6 or Clock of Pipe Delay_RIPP_CNT",
+   "bits": [
+    168,
+    173
+   ]
+  },
+  {
+   "output": 29,
+   "function": "Reserved",
+   "bits": [
+    174,
+    179
+   ]
+  },
+  {
+   "output": 30,
+   "function": "MULTFUNC_16BIT_0: IN0 of LUT4_0 or Clock Input of DFF9;",
+   "bits": [
+    180,
+    185
+   ]
+  },
+  {
+   "output": 31,
+   "function": "MULTFUNC_16BIT_0: IN1 of LUT4_0 or nRST of DFF9;",
+   "bits": [
+    186,
+    191
+   ]
+  },
+  {
+   "output": 32,
+   "function": "MULTFUNC_16BIT_0: IN2 of LUT4_0 or nSET of DFF9 or KEEP Input of FSM0 or",
+   "bits": [
+    192,
+    197
+   ]
+  },
+  {
+   "output": 33,
+   "function": "MULTFUNC_16BIT_0: IN3 of LUT4_0 or Data Input of DFF9;",
+   "bits": [
+    198,
+    203
+   ]
+  },
+  {
+   "output": 34,
+   "function": "MULTFUNC_8BIT_1: IN0 of LUT3_7 or Clock Input of DFF10;",
+   "bits": [
+    204,
+    209
+   ]
+  },
+  {
+   "output": 35,
+   "function": "MULTFUNC_8BIT_1: IN1 of LUT3_7 or nRST (nSET) of DFF10;",
+   "bits": [
+    210,
+    215
+   ]
+  },
+  {
+   "output": 36,
+   "function": "MULTFUNC_8BIT_1: IN2 of LUT3_7 or Data Input of DFF10;",
+   "bits": [
+    216,
+    221
+   ]
+  },
+  {
+   "output": 37,
+   "function": "MULTFUNC_8BIT_2: IN0 of LUT3_8 or Clock Input of DFF11;",
+   "bits": [
+    222,
+    227
+   ]
+  },
+  {
+   "output": 38,
+   "function": "MULTFUNC_8BIT_2: IN1 of LUT3_8 or nRST (nSET) of DFF11;",
+   "bits": [
+    228,
+    233
+   ]
+  },
+  {
+   "output": 39,
+   "function": "MULTFUNC_8BIT_2: IN2 of LUT3_8 or Data Input of DFF11;",
+   "bits": [
+    234,
+    239
+   ]
+  },
+  {
+   "output": 40,
+   "function": "MULTFUNC_8BIT_3: IN0 of LUT3_9 or Clock Input of DFF12;",
+   "bits": [
+    240,
+    245
+   ]
+  },
+  {
+   "output": 41,
+   "function": "MULTFUNC_8BIT_3: IN1 of LUT3_9 or nRST (nSET) of DFF12;",
+   "bits": [
+    246,
+    251
+   ]
+  },
+  {
+   "output": 42,
+   "function": "MULTFUNC_8BIT_3: IN2 of LUT3_9 or Data Input of DFF12;",
+   "bits": [
+    252,
+    257
+   ]
+  },
+  {
+   "output": 43,
+   "function": "MULTFUNC_8BIT_4: IN0 of LUT3_10 or Clock Input of DFF13;",
+   "bits": [
+    258,
+    263
+   ]
+  },
+  {
+   "output": 44,
+   "function": "MULTFUNC_8BIT_4: IN1 of LUT3_10 or nRST (nSET) of DFF13;",
+   "bits": [
+    264,
+    269
+   ]
+  },
+  {
+   "output": 45,
+   "function": "MULTFUNC_8BIT_4: IN2 of LUT3_10 or Data Input of DFF13;",
+   "bits": [
+    270,
+    275
+   ]
+  },
+  {
+   "output": 46,
+   "function": "MULTFUNC_8BIT_5: IN0 of LUT3_11 or Clock Input of DFF14;",
+   "bits": [
+    276,
+    281
+   ]
+  },
+  {
+   "output": 47,
+   "function": "MULTFUNC_8BIT_5: IN1 of LUT3_11 or nRST (nSET) of DFF14;",
+   "bits": [
+    282,
+    287
+   ]
+  },
+  {
+   "output": 48,
+   "function": "MULTFUNC_8BIT_5: IN2 of LUT3_11 or Data Input of DFF14;",
+   "bits": [
+    288,
+    293
+   ]
+  },
+  {
+   "output": 49,
+   "function": "MULTFUNC_8BIT_6: IN0 of LUT3_12 or Clock Input of DFF15;",
+   "bits": [
+    294,
+    299
+   ]
+  },
+  {
+   "output": 50,
+   "function": "MULTFUNC_8BIT_6: IN1 of LUT3_12 or nRST (nSET) of DFF15;",
+   "bits": [
+    300,
+    305
+   ]
+  },
+  {
+   "output": 51,
+   "function": "MULTFUNC_8BIT_6: IN2 of LUT3_12 or Data Input of DFF15;",
+   "bits": [
+    306,
+    311
+   ]
+  },
+  {
+   "output": 52,
+   "function": "MULTFUNC_8BIT_7: IN0 of LUT3_13 or Clock Input of DFF16;",
+   "bits": [
+    312,
+    317
+   ]
+  },
+  {
+   "output": 53,
+   "function": "MULTFUNC_8BIT_7: IN1 of LUT3_13 or nRST (nSET) of DFF16;",
+   "bits": [
+    318,
+    323
+   ]
+  },
+  {
+   "output": 54,
+   "function": "MULTFUNC_8BIT_7: IN2 of LUT3_13 or Data Input of DFF16;",
+   "bits": [
+    324,
+    329
+   ]
+  },
+  {
+   "output": 55,
+   "function": "Filter/Edge detect input",
+   "bits": [
+    330,
+    335
+   ]
+  },
+  {
+   "output": 56,
+   "function": "Programmable delay/edge detect input",
+   "bits": [
+    336,
+    341
+   ]
+  },
+  {
+   "output": 57,
+   "function": "OSC2 ENABLE from matrix",
+   "bits": [
+    342,
+    347
+   ]
+  },
+  {
+   "output": 58,
+   "function": "OSC0 ENABLE from matrix",
+   "bits": [
+    348,
+    353
+   ]
+  },
+  {
+   "output": 59,
+   "function": "OSC1 ENABLE matrix",
+   "bits": [
+    354,
+    359
+   ]
+  },
+  {
+   "output": 60,
+   "function": "Temp sensor and Vref PD from matrix",
+   "bits": [
+    360,
+    365
+   ]
+  },
+  {
+   "output": 61,
+   "function": "BG power-down from matrix",
+   "bits": [
+    366,
+    371
+   ]
+  },
+  {
+   "output": 62,
+   "function": "PWR UP of ACMP0H from matrix",
+   "bits": [
+    372,
+    377
+   ]
+  },
+  {
+   "output": 63,
+   "function": "PWR UP of ACMP1H from matrix",
+   "bits": [
+    378,
+    383
+   ]
+  },
+  {
+   "output": 64,
+   "function": "PWR UP of ACMP2L from matrix",
+   "bits": [
+    384,
+    389
+   ]
+  },
+  {
+   "output": 65,
+   "function": "PWR UP of ACMP3L from matrix",
+   "bits": [
+    390,
+    395
+   ]
+  },
+  {
+   "output": 66,
+   "function": "Reserved",
+   "bits": [
+    396,
+    401
+   ]
+  },
+  {
+   "output": 67,
+   "function": "IO0 Digital Output",
+   "bits": [
+    402,
+    407
+   ]
+  },
+  {
+   "output": 68,
+   "function": "IO1 Digital Output",
+   "bits": [
+    408,
+    413
+   ]
+  },
+  {
+   "output": 69,
+   "function": "IO1 Digital Output OE",
+   "bits": [
+    414,
+    419
+   ]
+  },
+  {
+   "output": 70,
+   "function": "IO2 Digital Output",
+   "bits": [
+    420,
+    425
+   ]
+  },
+  {
+   "output": 71,
+   "function": "IO3 Digital Output",
+   "bits": [
+    426,
+    431
+   ]
+  },
+  {
+   "output": 72,
+   "function": "IO4 Digital Output",
+   "bits": [
+    432,
+    437
+   ]
+  },
+  {
+   "output": 73,
+   "function": "IO4 Digital Output OE",
+   "bits": [
+    438,
+    443
+   ]
+  },
+  {
+   "output": 74,
+   "function": "IO5 Digital Output",
+   "bits": [
+    444,
+    449
+   ]
+  },
+  {
+   "output": 75,
+   "function": "IO5 Digital Output OE",
+   "bits": [
+    450,
+    455
+   ]
+  },
+  {
+   "output": 76,
+   "function": "IO6 Digital Output",
+   "bits": [
+    456,
+    461
+   ]
+  },
+  {
+   "output": 77,
+   "function": "IO7 Digital Output",
+   "bits": [
+    462,
+    467
+   ]
+  },
+  {
+   "output": 78,
+   "function": "IO8 Digital Output",
+   "bits": [
+    468,
+    473
+   ]
+  },
+  {
+   "output": 79,
+   "function": "IO8 Digital Output OE",
+   "bits": [
+    474,
+    479
+   ]
+  },
+  {
+   "output": 80,
+   "function": "IO9 Digital Output",
+   "bits": [
+    480,
+    485
+   ]
+  },
+  {
+   "output": 81,
+   "function": "IO9 Digital Output OE",
+   "bits": [
+    486,
+    491
+   ]
+  },
+  {
+   "output": 82,
+   "function": "IO10 Digital Output",
+   "bits": [
+    492,
+    497
+   ]
+  },
+  {
+   "output": 83,
+   "function": "IO10 Digital Output OE",
+   "bits": [
+    498,
+    503
+   ]
+  },
+  {
+   "output": 84,
+   "function": "IO11 Digital Output",
+   "bits": [
+    504,
+    509
+   ]
+  },
+  {
+   "output": 85,
+   "function": "IO11 Digital Output OE",
+   "bits": [
+    510,
+    515
+   ]
+  },
+  {
+   "output": 86,
+   "function": "IO12 Digital Output",
+   "bits": [
+    516,
+    521
+   ]
+  },
+  {
+   "output": 87,
+   "function": "IO12 Digital Output OE",
+   "bits": [
+    522,
+    527
+   ]
+  },
+  {
+   "output": 88,
+   "function": "IO13 Digital Output",
+   "bits": [
+    528,
+    533
+   ]
+  },
+  {
+   "output": 89,
+   "function": "IO13 Digital Output OE",
+   "bits": [
+    534,
+    539
+   ]
+  },
+  {
+   "output": 90,
+   "function": "IO14 Digital Output",
+   "bits": [
+    540,
+    545
+   ]
+  },
+  {
+   "output": 91,
+   "function": "IO14 Digital Output OE",
+   "bits": [
+    546,
+    551
+   ]
+  },
+  {
+   "output": 92,
+   "function": "Reserved",
+   "bits": [
+    552,
+    557
+   ]
+  },
+  {
+   "output": 93,
+   "function": "Reserved",
+   "bits": [
+    558,
+    563
+   ]
+  },
+  {
+   "output": 94,
+   "function": "Matrix OUT 94",
+   "bits": [
+    564,
+    569
+   ]
+  },
+  {
+   "output": 95,
+   "function": "Matrix OUT 95",
+   "bits": [
+    570,
+    575
+   ]
+  }
+ ],
+ "wire_map": {
+  "MI_L2_0_0": 0,
+  "MI_L2_0_1": 1,
+  "MI_L2_3_0": 2,
+  "MI_L2_3_1": 3,
+  "MI_L2_1_0": 4,
+  "MI_L2_1_1": 5,
+  "MI_L2_2_0": 6,
+  "MI_L2_2_1": 7,
+  "MI_L3_0_0": 8,
+  "MI_L3_0_1": 9,
+  "MI_L3_0_2": 10,
+  "MI_L3_1_0": 11,
+  "MI_L3_1_1": 12,
+  "MI_L3_1_2": 13,
+  "MI_L3_2_0": 14,
+  "MI_L3_2_1": 15,
+  "MI_L3_2_2": 16,
+  "MI_L3_3_0": 17,
+  "MI_L3_3_1": 18,
+  "MI_L3_3_2": 19,
+  "MI_L3_4_0": 20,
+  "MI_L3_4_1": 21,
+  "MI_L3_4_2": 22,
+  "MI_L3_5_0": 23,
+  "MI_L3_5_1": 24,
+  "MI_L3_5_2": 25,
+  "MI_L3_6_0": 26,
+  "MI_L3_6_1": 27,
+  "MI_L3_6_2": 28,
+  "MI_L4_0_0": 30,
+  "MI_L4_0_1": 31,
+  "MI_L4_0_2": 32,
+  "MI_L4_0_3": 33,
+  "MI_L3_7_0": 34,
+  "MI_L3_7_1": 35,
+  "MI_L3_7_2": 36,
+  "MI_L3_8_0": 37,
+  "MI_L3_8_1": 38,
+  "MI_L3_8_2": 39,
+  "MI_L3_9_0": 40,
+  "MI_L3_9_1": 41,
+  "MI_L3_9_2": 42,
+  "MI_L3_10_0": 43,
+  "MI_L3_10_1": 44,
+  "MI_L3_10_2": 45,
+  "MI_L3_11_0": 46,
+  "MI_L3_11_1": 47,
+  "MI_L3_11_2": 48,
+  "MI_L3_12_0": 49,
+  "MI_L3_12_1": 50,
+  "MI_L3_12_2": 51,
+  "MI_L3_13_0": 52,
+  "MI_L3_13_1": 53,
+  "MI_L3_13_2": 54
+ }
+}

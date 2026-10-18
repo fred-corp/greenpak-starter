@@ -7,24 +7,252 @@
    "name": "GND"
   },
   {
+   "value": 1,
+   "name": "IO0 Digital Input"
+  },
+  {
+   "value": 2,
+   "name": "IO1 Digital Input"
+  },
+  {
+   "value": 3,
+   "name": "IO2 Digital Input"
+  },
+  {
+   "value": 4,
+   "name": "IO3 Digital Input"
+  },
+  {
+   "value": 5,
+   "name": "IO4 Digital Input"
+  },
+  {
+   "value": 6,
+   "name": "IO5 Digital Input"
+  },
+  {
+   "value": 7,
+   "name": "IO8 Digital Input"
+  },
+  {
+   "value": 8,
+   "name": "IO9 Digital Input"
+  },
+  {
+   "value": 9,
+   "name": "IO10 Digital Input"
+  },
+  {
+   "value": 10,
+   "name": "IO11 Digital Input"
+  },
+  {
+   "value": 11,
+   "name": "IO12 Digital Input"
+  },
+  {
    "value": 12,
    "name": "IO13 Digital Input"
+  },
+  {
+   "value": 13,
+   "name": "IO14 Digital Input"
+  },
+  {
+   "value": 14,
+   "name": "LUT2_0_DFF0_OUT"
+  },
+  {
+   "value": 15,
+   "name": "LUT2_1_DFF1_OUT"
+  },
+  {
+   "value": 16,
+   "name": "LUT2_2_DFF2_OUT"
+  },
+  {
+   "value": 17,
+   "name": "LUT2_3_PGEN_OUT"
   },
   {
    "value": 18,
    "name": "LUT3_0_DFF3_OUT"
   },
   {
+   "value": 19,
+   "name": "LUT3_1_DFF4_OUT"
+  },
+  {
+   "value": 20,
+   "name": "LUT3_2_DFF5_OUT"
+  },
+  {
+   "value": 21,
+   "name": "LUT3_3_DFF6_OUT"
+  },
+  {
+   "value": 22,
+   "name": "LUT3_4_DFF7_OUT"
+  },
+  {
+   "value": 23,
+   "name": "LUT3_5_DFF8_OUT"
+  },
+  {
+   "value": 24,
+   "name": "LUT3_6_PIPEDLY_RIPP_CNT_OUT0"
+  },
+  {
+   "value": 25,
+   "name": "PIPEDLY_RIPP_CNT_OUT1"
+  },
+  {
+   "value": 26,
+   "name": "RIPP_CNT_OUT2"
+  },
+  {
+   "value": 27,
+   "name": "EDET_FILTER_OUT"
+  },
+  {
+   "value": 28,
+   "name": "PROG_DLY_EDET_OUT"
+  },
+  {
+   "value": 29,
+   "name": "MULTFUNC_8BIT_1: DLY_CNT_OUT"
+  },
+  {
    "value": 30,
    "name": "CKOSC1_MATRIX: OSC1 matrix input"
+  },
+  {
+   "value": 31,
+   "name": "CKOSC0_MATRIX: OSC0 matrix input"
+  },
+  {
+   "value": 32,
+   "name": "CKOSC2_MATRIX: OSC2 matrix input"
   },
   {
    "value": 33,
    "name": "MULTFUNC_8BIT_2: DLY_CNT_OUT"
   },
   {
+   "value": 34,
+   "name": "MULTFUNC_8BIT_3: DLY_CNT_OUT"
+  },
+  {
+   "value": 35,
+   "name": "MULTFUNC_8BIT_4: DLY_CNT_OUT"
+  },
+  {
+   "value": 36,
+   "name": "MULTFUNC_8BIT_5: DLY_CNT_OUT"
+  },
+  {
+   "value": 37,
+   "name": "MULTFUNC_8BIT_6: DLY_CNT_OUT"
+  },
+  {
+   "value": 38,
+   "name": "MULTFUNC_8BIT_7: DLY_CNT_OUT"
+  },
+  {
+   "value": 39,
+   "name": "MULTFUNC_16BIT_0: LUT_DFF_OUT"
+  },
+  {
+   "value": 40,
+   "name": "MULTFUNC_8BIT_1: LUT_DFF_OUT"
+  },
+  {
+   "value": 41,
+   "name": "MULTFUNC_8BIT_2: LUT_DFF_OUT"
+  },
+  {
+   "value": 42,
+   "name": "MULTFUNC_8BIT_3: LUT_DFF_OUT"
+  },
+  {
+   "value": 43,
+   "name": "MULTFUNC_8BIT_4: LUT_DFF_OUT"
+  },
+  {
+   "value": 44,
+   "name": "MULTFUNC_8BIT_5: LUT_DFF_OUT"
+  },
+  {
    "value": 45,
    "name": "MULTFUNC_8BIT_6: LUT_DFF_OUT"
+  },
+  {
+   "value": 46,
+   "name": "MULTFUNC_8BIT_7: LUT_DFF_OUT"
+  },
+  {
+   "value": 47,
+   "name": "MULTFUNC_16BIT_0: DLY_CNT_OUT"
+  },
+  {
+   "value": 48,
+   "name": "I2C_virtual_7 Input: register [976]"
+  },
+  {
+   "value": 49,
+   "name": "I2C_virtual_6 Input: register [977]"
+  },
+  {
+   "value": 50,
+   "name": "I2C_virtual_5 Input: register [978]"
+  },
+  {
+   "value": 51,
+   "name": "I2C_virtual_4 Input: register [979]"
+  },
+  {
+   "value": 52,
+   "name": "I2C_virtual_3 Input: register [980]"
+  },
+  {
+   "value": 53,
+   "name": "I2C_virtual_2 Input: register [981]"
+  },
+  {
+   "value": 54,
+   "name": "I2C_virtual_1 Input: register [982]"
+  },
+  {
+   "value": 55,
+   "name": "I2C_virtual_0 Input: register [983]"
+  },
+  {
+   "value": 56,
+   "name": "ACMP0H_OUT"
+  },
+  {
+   "value": 57,
+   "name": "ACMP1H_OUT"
+  },
+  {
+   "value": 58,
+   "name": "ACMP2L_OUT"
+  },
+  {
+   "value": 59,
+   "name": "ACMP3L_OUT"
+  },
+  {
+   "value": 60,
+   "name": "2nd CKOSC1_MATRIX"
+  },
+  {
+   "value": 61,
+   "name": "2nd CKOSC0_MATRIX"
+  },
+  {
+   "value": 62,
+   "name": "POR OUT"
   },
   {
    "value": 63,

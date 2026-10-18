@@ -1,0 +1,52 @@
+# GreenPAK6 synthesis flow (SLG46824/26 and other GP6 parts):
+# Verilog -> GP_2LUT/GP_3LUT cells -> JSON for nextpnr.
+#
+# Same as greenpak_synth.ys but maps with `abc -lut 3`: the GP6 logic
+# fabric has 4x 2-bit LUT + 7x 3-bit LUT macrocells (plus MF-block
+# LUTs) and NO standalone 4-bit LUTs, so 4-input cones must be
+# decomposed into 3-LUTs during techmapping.
+#
+# Reads design.v, writes out.json. Run from the flow/ directory:
+#   yosys -s greenpak_synth_gp6.ys
+
+read_verilog -lib greenpak4/cells_sim.v
+read_verilog design.v
+
+hierarchy -check -top top
+proc
+flatten
+tribuf -logic
+synth -run coarse
+
+extract_counter -pout GP_DCMP,GP_DAC -maxwidth 14
+clean
+opt -fast -mux_undef -undriven -fine
+memory_map
+opt -undriven -fine
+techmap -map +/techmap.v -map greenpak4/cells_latch.v
+dfflibmap -prepare -liberty greenpak4/gp_dff.lib
+opt -fast -noclkinv -noff
+
+# LUT mapping (nlutmap was removed from modern yosys; abc -lut 3 +
+# cells_map.v maps $lut -> GP_2LUT/GP_3LUT/GP_4LUT)
+abc -lut 3
+clean
+
+shregmap -tech greenpak4
+dfflibmap -liberty greenpak4/gp_dff.lib
+dffinit -ff GP_DFF Q INIT
+dffinit -ff GP_DFFR Q INIT
+dffinit -ff GP_DFFS Q INIT
+dffinit -ff GP_DFFSR Q INIT
+iopadmap -bits -inpad GP_IBUF OUT:IN -outpad GP_OBUF IN:OUT \
+  -inoutpad GP_OBUF OUT:IN -toutpad GP_OBUFT OE:IN:OUT \
+  -tinoutpad GP_IOBUF OE:OUT:IN:IO
+attrmvcp -attr src -attr LOC t:GP_OBUF t:GP_OBUFT t:GP_IOBUF n:*
+attrmvcp -attr src -attr LOC -driven t:GP_IBUF n:*
+techmap -map greenpak4/cells_map.v
+clean
+
+hierarchy -check
+stat
+check -noinit
+write_json out.json

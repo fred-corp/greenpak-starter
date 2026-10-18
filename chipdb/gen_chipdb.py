@@ -161,6 +161,28 @@ def greenpak_pin_names(part):
     return GREENPAK_PINOUTS.get(base)
 
 
+# Datasheet-confirmed device inventory (SLG46826 DS rev 3.18): logic
+# macrocells outside the multifunction blocks. LUT2_3 doubles as PGEN,
+# LUT3_6 as Pipe Delay/Ripple Counter (both usable as plain LUTs).
+GREENPAK_INVENTORY = {
+    'SLG46826': {'n2': 4, 'n3': 7, 'n4': 0, 'ndff': 0},
+}
+
+# Datasheet-confirmed LUT truth-table bit ranges (Table 59 / sections
+# 7.2-7.4). These override the decompiler-extracted tables when present:
+# the extraction's longest-consecutive-run heuristic mis-captures the
+# LUT3_0 slot (it grabs the adjacent 16-bit PGen counter-data range
+# 1168-1183 instead of the truth range 1184-1191). Validated bit-exact
+# against a real Go Configure design (see analysis/simulate_nvm.py).
+DATASHEET_TRUTH = {
+    'SLG46826': {
+        'LUT2': [[1152 + 4 * i + k for k in range(4)] for i in range(4)],
+        'LUT3': [[1184 + 8 * i + k for k in range(8)] for i in range(6)]
+                + [[1248 + k for k in range(8)]],
+    },
+}
+
+
 def greenpak_scaffold(part="SLG46826V", nvm_path=None, n2=16, n3=16, n4=8, ndff=8):
     """GreenPAK-style fabric: fixed-position logic components connected
     through the switch matrix. yosys greenpak4 cells (GP_2LUT, GP_3LUT,
@@ -280,16 +302,92 @@ def greenpak_scaffold(part="SLG46826V", nvm_path=None, n2=16, n3=16, n4=8, ndff=
     return chipdb
 
 
+def matrix_join(part, bels, device_regs):
+    """Build the switch-matrix -> NVM join tables from the datasheet-
+    extracted device_regs tables (datasheet Tables 21/22 + pin map):
+
+      nvm.matrix.fields  = {dst wire: [lo, hi]}   6-bit connection field
+      nvm.matrix.sources = {src wire: value}      Matrix Input Number
+
+    A routed PIP (src -> dst) with both sides mapped encodes to "write
+    sources[src] into bits fields[dst]" - the complete GreenPAK matrix
+    connection encoding, from datasheet data only.
+    """
+    def load(name):
+        p = os.path.join(device_regs, name)
+        return json.load(open(p)) if os.path.exists(p) else None
+
+    base = re.sub(r'[A-Za-z]+$', '', part)
+    vp = os.path.join(device_regs, 'variants.json')
+    if os.path.exists(vp):
+        variants = json.load(open(vp))
+        base = variants.get(base, {}).get('base', base)
+    inputs = load(base + '_matrix_inputs.json')
+    outputs = load(base + '_matrix_outputs.json')
+    pins = load(base + '_pins.json')
+    if not (inputs and outputs):
+        return None
+
+    by_name = {s['name']: s['value'] for s in inputs['sources']}
+    fields = {wire: [6 * out, 6 * out + 5]
+              for wire, out in outputs['wire_map'].items()}
+    # IO output path: "IOx Digital Output" is itself a matrix output
+    # (datasheet Table 22: OUT67-91), so the fabric->pad wire gets the
+    # same 6-bit field treatment.
+    func2out = {o['function']: o['output'] for o in outputs['outputs']}
+    io_oe = {}  # fabric->pad wire -> OE field bits ("IOx Digital Output OE")
+
+    sources = {}
+    for bel in bels:
+        for port in bel.get('ports', {}).values():
+            w = port.get('wire', '')
+            m = re.match(r'^MF_L([234])_(\d+)$', w)
+            if m:
+                # the single Table 21 source named LUT<w>_<i>_...
+                cands = {v for n, v in by_name.items()
+                         if n.startswith('LUT%s_%s_' % (m.group(1), m.group(2)))}
+                if len(cands) == 1:
+                    sources[w] = next(iter(cands))
+            elif re.match(r'^(VCC|GND)_NET\d+$', w):
+                v = by_name.get('VDD' if w.startswith('VCC') else 'GND')
+                if v is not None:
+                    sources[w] = v
+        if bel.get('type') == 'IOB' and pins:
+            pkg = next(iter(pins['packages'].values()))
+            # IOB names are "PIN<k>"; the pin-map keys are bare numbers
+            func = pkg.get(re.sub(r'^PIN', '', bel['name']))
+            if not func:
+                continue
+            v = by_name.get('%s Digital Input' % func)
+            if v is not None:
+                sources[bel['ports']['OUT']['wire']] = v
+            out = func2out.get('%s Digital Output' % func)
+            if out is not None:
+                fields[bel['ports']['IN']['wire']] = [6 * out, 6 * out + 5]
+            oe = func2out.get('%s Digital Output OE' % func)
+            if oe is not None:
+                io_oe[bel['ports']['IN']['wire']] = [6 * oe, 6 * oe + 5]
+    return {
+        'model': 'field for matrix output n = bits [6n, 6n+5]; content '
+                 '= Matrix Input Number (datasheet Tables 21/22)',
+        'fields': fields,
+        'sources': sources,
+        'io_oe': io_oe,
+    }
+
+
 def greenpak_nvm_section(part, nvm_path, bels, device_regs=None):
-    """NVM layout. If a curated device_regs/<part>_luts.json exists
-    (analysis/extract_lut_regs.py), LUT BELs get their REAL truth-table
-    bit indexes extracted from Go Configure; otherwise scaffold
-    sequential allocation is used."""
-    nregs = nvm_register_count(nvm_path)
-    free = nregs * 8  # default NVM image occupies [0, nregs*8)
+    """NVM layout. Datasheet-confirmed ranges (DATASHEET_TRUTH) take
+    priority; then curated device_regs/<part>_luts.json (analysis/
+    extract_lut_regs.py); otherwise scaffold sequential allocation."""
+    # the defaultNVM file is BIT-indexed (one 0/1 line per NVM bit):
+    # its entry count is the device bit count, not a register count
+    nbits = nvm_register_count(nvm_path)
+    free = nbits  # scaffold allocations continue past the default image
     bel_bits = []
 
     lut_tables = None
+    ds_tables = None
     if device_regs:
         # Variants share a base part's ChipPart model in Go Configure
         # (same dispatch, same NVM size); see device_regs/variants.json
@@ -303,6 +401,7 @@ def greenpak_nvm_section(part, nvm_path, bels, device_regs=None):
                 variants = json.load(f)
         if base in variants:
             base = variants[base]['base']
+        ds_tables = DATASHEET_TRUTH.get(base)
         candidates = [part + '_luts.json',
                       re.sub(r'[A-Za-z]+$', '', part) + '_luts.json',
                       base + '_luts.json']
@@ -323,28 +422,32 @@ def greenpak_nvm_section(part, nvm_path, bels, device_regs=None):
     counts = {}
     for bel in bels:
         t = bel["type"]
-        nbits = {"GP_2LUT": 4, "GP_3LUT": 8, "GP_4LUT": 16}.get(t)
-        if nbits is None:
+        width = {"GP_2LUT": 4, "GP_3LUT": 8, "GP_4LUT": 16}.get(t)
+        if width is None:
             continue
         kind = {"GP_2LUT": "LUT2", "GP_3LUT": "LUT3", "GP_4LUT": "LUT4"}[t]
         idx = counts.get(kind, 0)
         counts[kind] = idx + 1
-        if lut_tables and idx < len(lut_tables.get(kind, [])):
-            truth = lut_tables[kind][idx][:nbits]
+        if ds_tables and idx < len(ds_tables.get(kind, [])):
+            truth = ds_tables[kind][idx][:width]
+            src = "datasheet Table 59 (validated)"
+        elif lut_tables and idx < len(lut_tables.get(kind, [])):
+            truth = lut_tables[kind][idx][:width]
             src = "extracted (device_regs)"
         else:
-            truth = list(range(free, free + nbits))
-            free += nbits
+            truth = list(range(free, free + width))
+            free += width
             src = "scaffold"
         bel_bits.append({
             "name": bel["name"], "type": t,
             "truth_table_bits": truth, "source": src,
         })
     return {
-        "bits": max(free, (nregs * 8)),
+        "bits": max(free, nbits),
         "default": os.path.abspath(nvm_path),
         "bit_order": "register r bit b -> image index r*8+b",
         "bel_bits": bel_bits,
+        "matrix": matrix_join(part, bels, device_regs) if device_regs else None,
     }
 
 
@@ -375,10 +478,18 @@ def main():
     p.add_argument("--x", type=int, default=2, help="forgefpga: tile grid X")
     p.add_argument("--y", type=int, default=1, help="forgefpga: tile grid Y")
     p.add_argument("--slices", type=int, default=4, help="forgefpga: slices/tile")
-    p.add_argument("--n2", type=int, default=16, help="greenpak: 2-bit LUT count")
-    p.add_argument("--n3", type=int, default=16, help="greenpak: 3-bit LUT count")
-    p.add_argument("--n4", type=int, default=8, help="greenpak: 4-bit LUT count")
-    p.add_argument("--ndff", type=int, default=8, help="greenpak: DFF count")
+    p.add_argument("--n2", type=int, default=None,
+                   help="greenpak: 2-bit LUT count (datasheet default "
+                        "for known parts)")
+    p.add_argument("--n3", type=int, default=None,
+                   help="greenpak: 3-bit LUT count (datasheet default "
+                        "for known parts)")
+    p.add_argument("--n4", type=int, default=None,
+                   help="greenpak: 4-bit LUT count (datasheet default "
+                        "for known parts)")
+    p.add_argument("--ndff", type=int, default=None,
+                   help="greenpak: DFF count (datasheet default "
+                        "for known parts)")
     p.add_argument("--list", action="store_true",
                    help="list part numbers from the extracted data")
     p.add_argument("--data-dir", default=os.path.join(os.path.dirname(__file__), '..',
@@ -395,7 +506,21 @@ def main():
     if args.family == "forgefpga":
         chipdb = forgefpga_scaffold(args.part, args.x, args.y, args.slices)
     else:
-        chipdb = greenpak_scaffold(args.part, args.nvm, args.n2, args.n3, args.n4, args.ndff)
+        # datasheet-confirmed inventory for known parts; CLI --n2/--n3/
+        # --n4/--ndff still override for experimentation
+        base = re.sub(r'[A-Za-z]+$', '', args.part)
+        vp = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                          'device_regs', 'variants.json')
+        if os.path.exists(vp):
+            with open(vp) as f:
+                variants = json.load(f)
+            base = variants.get(base, {}).get('base', base)
+        inv = GREENPAK_INVENTORY.get(base, {})
+        n2 = args.n2 if args.n2 is not None else inv.get('n2', 16)
+        n3 = args.n3 if args.n3 is not None else inv.get('n3', 16)
+        n4 = args.n4 if args.n4 is not None else inv.get('n4', 8)
+        ndff = args.ndff if args.ndff is not None else inv.get('ndff', 8)
+        chipdb = greenpak_scaffold(args.part, args.nvm, n2, n3, n4, ndff)
     json.dump(chipdb, sys.stdout, indent=1)
     print()
 
