@@ -208,26 +208,30 @@ def flash_shadow(be, image, addr=I2C_ADDR):
 
 
 def flash_otp(be, image, addr=I2C_ADDR):
-    # NOTE: the OTP sequence below is the common GreenPAK4-6 shape
-    # (write-enable control reg, burst the image, program command,
-    # busy-wait). The exact control register values are in your
-    # device datasheet's "I2C programming" chapter - verify before
-    # first use, and never OTP-program without a backup image.
+    # Renesas ISP Guide SLG46824/26 rev 1.5:
+    #   NVM = 32 pages x 16 bytes; pages 0-15 = the 2K-bit chip
+    #   configuration (register map bytes 0x00-0xFF)
+    #   erase: byte write to ERSR (0xE3) = ERSE(b7) | page[4:0];
+    #   self-timed, tER <= 20 ms
+    #   write: page write (word address + 16 data bytes, A3..A0=0000);
+    #   self-timed after Stop, tWR <= 20 ms
+    #   verify: random sequential read; Table 4 lists bits to ignore
+    #   page #14 = protection page (write/erase protect settings)
+    if len(image) > 256:
+        image = image[:256]
     print("WARNING: OTP programming is irreversible.")
-    print("Verify the control-register constants against the datasheet!")
-    CTRL_WRITE_ENABLE = 0x01
-    CTRL_PROGRAM = 0x02
-    CTRL_STATUS = 0x03
-    be.write(addr, [CTRL_WRITE_ENABLE, 0x80])
-    for off in range(0, len(image), PAGE_SIZE):
-        chunk = image[off:off + PAGE_SIZE]
-        be.write(addr, [SHADOW_REG + off] + list(chunk))
-        be.write(addr, [CTRL_PROGRAM, 0x01])
-        time.sleep(OTP_FORCE_DELTA)
-        status = be.read(addr + 0, 1)
-        if status[0] != 0x00:
-            print("status byte 0x%02X" % status[0])
-    print("done")
+    ERSR = 0xE3
+    tWAIT = 0.021
+    for page in range(16):
+        chunk = image[page * 16:(page + 1) * 16]
+        if not any(chunk):
+            continue
+        print("page %2d: erase + program 16 bytes" % page)
+        be.write(addr, [ERSR, 0x80 | page])     # ERSE | page number
+        time.sleep(tWAIT)
+        be.write(addr, [page * 16] + list(chunk))  # page write (16 bytes)
+        time.sleep(tWAIT)
+    print("done (a device reset or power cycle reloads the new NVM)")
 
 
 def main():

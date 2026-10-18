@@ -370,3 +370,18 @@ them up automatically for those parts.
 - I2C Serial Reset = register bit [1601] (POR + reload from NVM);
   IO latching during writes = register bit [1602]
 - byte-write masking register at 0xC9 (partly-lock protection modes)
+
+## OTP programming sequence (ISP Guide SLG46824/26 rev 1.5)
+
+- NVM = 32 pages x 16 bytes; pages 0-15 = chip configuration (the
+  register map bytes), pages 16-31 = emulated EEPROM (SLG46826)
+- ERASE: byte write to the Erase Register ERSR (address 0xE3) with
+  ERSE (b7) | page number [4:0]; self-timed, tER <= 20 ms
+- WRITE: page write - word address then 16 data bytes (A3..A0 = 0000);
+  self-timed after Stop, tWR <= 20 ms
+- VERIFY: random sequential read; Table 4 of the ISP guide lists bits
+  to ignore (software '0' bits with no hardware cell)
+- page #14 = protection page (write/erase protect, 3 used bytes);
+  changes activate after a reset (soft reset via I2C or power cycle)
+- the flasher now implements this exact sequence (per used page:
+  erase -> 16-byte page write, 21 ms waits)
