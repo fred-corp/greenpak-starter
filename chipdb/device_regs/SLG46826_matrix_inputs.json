@@ -1,0 +1,34 @@
+{
+ "table": "Matrix Input Table (datasheet)",
+ "note": "mux field value = source index; write into bits 6*pin + [0..5] (Table 59)",
+ "sources": [
+  {
+   "value": 0,
+   "name": "GND"
+  },
+  {
+   "value": 12,
+   "name": "IO13 Digital Input"
+  },
+  {
+   "value": 18,
+   "name": "LUT3_0_DFF3_OUT"
+  },
+  {
+   "value": 30,
+   "name": "CKOSC1_MATRIX: OSC1 matrix input"
+  },
+  {
+   "value": 33,
+   "name": "MULTFUNC_8BIT_2: DLY_CNT_OUT"
+  },
+  {
+   "value": 45,
+   "name": "MULTFUNC_8BIT_6: LUT_DFF_OUT"
+  },
+  {
+   "value": 63,
+   "name": "VDD"
+  }
+ ]
+}

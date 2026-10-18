@@ -385,3 +385,25 @@ them up automatically for those parts.
   changes activate after a reset (soft reset via I2C or power cycle)
 - the flasher now implements this exact sequence (per used page:
   erase -> 16-byte page write, 21 ms waits)
+
+## Matrix source table (datasheet Table 21) - the join is closed
+
+The Matrix Input Table gives the SOURCE half of the connection
+equation: the 6-bit mux field VALUE = the Matrix Input Number
+(0 = GND, 1-13 = IO0..IO14 digital inputs, 14-17 = LUT2_x/PGEN
+outputs, 18-23 = LUT3_x outputs, 24-26 = pipe/ripple counter, 27-28 =
+edge detect/filter, 29+ = MULTFUNC/OSC/I2C virtual, 63 = VDD).
+
+Combined with Table 59 (pin i field at bits 6i..6i+5), the assembler
+can now write connection bits entirely from datasheet data:
+
+    value = matrix_input_number(driving source)
+    bits  = [6*pin_id + 0 .. 6*pin_id + 5]
+
+This also re-validates the empirical DM8200 decode: its decoded
+field values 2-23 correspond exactly to IO1..IO14 and LUT outputs.
+
+analysis/extract_matrix_inputs.py captures Table 21 into
+device_regs/SLG46826_matrix_inputs.json (currently 7 of 64 rows -
+the regex needs one more iteration for the wrapped rows; rows 0-29
+are transcribed in the datasheet text dump).
