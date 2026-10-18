@@ -12,7 +12,8 @@ validated vs scaffold.
 flow/               yosys synthesis scripts + prims + techmaps
 uarch/forgefpga/    ~/Downloads/nextpnr/build/nextpnr-generic Viaduct uarch (drop into nextpnr)
 chipdb/             device databases (gen_chipdb.py + device_regs/)
-bitstream/          NVM assembler (routed design -> .bin/.hex/.nvm)
+bitstream/          NVM assembler (routed design -> .bin/.hex/.nvm/
+                    .nvm.txt Go Configure import format)
 templates/          copy-per-project template (Makefile + HDL stubs)
 analysis/           reverse-engineering tooling + decompiled corpora
 formats/            .gp design-file parser
@@ -33,8 +34,16 @@ Then per design:
     cp -r templates/basic-project myproject && cd myproject
     echo "VSRC = src/top.v src/mine.v" > sources.mk  # or edit Makefile
     make TOP=top PART=SLG46826V
-    # -> top.bin, top.hex (Intel HEX), top.nvm (bit image)
+    # -> top.bin, top.hex (Intel HEX), top.nvm (bit image),
+    #    top.nvm.txt (Go Configure import format)
     make flash FLASH_BACKEND=dummy    # dry-run; see the Flashing section
+
+`top.nvm.txt` uses the exact format of Go Configure Software Hub's
+own NVM export files (one line per NVM bit, `index<TAB><TAB>value<TAB>
+<TAB>//`, CRLF line endings - byte-identical structure to the app's
+exports, verified against a real one). The file carries no device
+identifier: open/create a design for the same part in Go Configure
+before importing it.
 
 ## Quickstart (VHDL)
 

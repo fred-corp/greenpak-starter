@@ -103,7 +103,7 @@ $(TOP)_routed.rpt: $(TOP)_synth.json $(CHIPDB) $(PCF)
 	  --vopt rpt=$@ --json $< --freq $(FREQ)
 
 # ---- NVM assembly ------------------------------------------------------
-$(TOP).nvm $(TOP).bin $(TOP).hex: $(TOP)_routed.rpt $(CHIPDB)
+$(TOP).nvm $(TOP).nvm.txt $(TOP).bin $(TOP).hex: $(TOP)_routed.rpt $(CHIPDB)
 	python3 $(TOOLS)/bitstream/assemble.py \
 	  --chipdb $(CHIPDB) --routed $(TOP)_routed.rpt --out $(TOP)
 	-python3 $(TOOLS)/bitstream/verify.py --chipdb $(CHIPDB) \
@@ -111,6 +111,7 @@ $(TOP).nvm $(TOP).bin $(TOP).hex: $(TOP)_routed.rpt $(CHIPDB)
 
 flash-hex: $(TOP).hex
 	@echo "flashable image: $(TOP).hex (Intel HEX) / $(TOP).bin"
+	@echo "Go Configure import file: $(TOP).nvm.txt"
 
 # ---- flashing over I2C (third-party tools) ------------------------------
 # BACKEND: i2cdriver | flipper | smbus | dummy (dry-run)
@@ -132,4 +133,4 @@ chipdb:
 	@echo "note: for real register data pass --nvm <defaultNVM txt>"
 
 clean:
-	rm -f *.json *.rpt *.bin *.hex *.nvm design.v out.v forgefpga_*.v *.work
+	rm -f *.json *.rpt *.bin *.hex *.nvm *.nvm.txt design.v out.v forgefpga_*.v *.work

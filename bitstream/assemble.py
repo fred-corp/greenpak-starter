@@ -18,8 +18,10 @@ Inputs:
              per-PIP bit index tables; gen_chipdb.py emits scaffold
              assignments today, extracted tables will replace them)
   --routed   nextpnr --write JSON (placed and routed design)
-  --out      output prefix: .nvm (raw bit image), .bin (packed bytes,
-             MSB-first per register), .hex (Intel HEX)
+  --out      output prefix: .nvm (raw bit string), .bin (packed bytes,
+             LSB-first bit per index), .hex (Intel HEX), .nvm.txt
+             (Go Configure Software Hub import format: one line per
+             NVM bit, "index\t\tvalue\t\t//")
 
 Usage:
   assemble.py --chipdb slg46826.json --routed routed.json --out dm8200
@@ -201,6 +203,13 @@ def main():
         intel_hex(data, f)
     with open(args.out + '.nvm', 'w') as f:
         f.write(''.join('1' if b else '0' for b in bits) + '\n')
+    # Go Configure Software Hub import format (identical to the app's own
+    # "Export NVM" files and its defaultNVM resources): one line per NVM
+    # bit, CRLF-terminated, "index\t\tvalue\t\t//"
+    with open(args.out + '.nvm.txt', 'w', newline='') as f:
+        f.write('index\t\tvalue\t\tcomment\r\n')
+        for i, b in enumerate(bits):
+            f.write('%d\t\t%d\t\t//\r\n' % (i, 1 if b else 0))
 
     print('assembled %s: %d bits (%d bytes), %d cells mapped, %d bits changed'
           % (args.out, len(bits), len(data), stats['cells'], stats['bits_set']))

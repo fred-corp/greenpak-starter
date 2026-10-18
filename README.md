@@ -23,10 +23,15 @@ are compiled in, so ours must be built once:
 
     tools/build-nextpnr.sh                     # one-time
     cp -r templates/basic-project myproject && cd myproject
-    make TOP=top PART=SLG46826V                # -> top.bin/.hex/.nvm
+    make TOP=top PART=SLG46826V                # -> top.bin/.hex/.nvm/.nvm.txt
     make flash                                 # dry-run (dummy backend)
     make flash FLASH_BACKEND=i2cdriver FLASH_PORT=/dev/ttyUSB0
     # backends: i2cdriver | flipper | smbus | dummy
+
+`top.nvm.txt` is the Go Configure Software Hub NVM format (same as
+the app's own export files): create/open an SLG46826V design in Go
+Configure, then import `top.nvm.txt` to see the design reconstructed
+from our bitstream.
 
 Pinout constraints go in `pinout.pcf` (`set_io <port> PIN16` or
 Vivado-style `set_property PACKAGE_PIN`). VHDL: `make HDL=vhdl`
