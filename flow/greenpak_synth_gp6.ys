@@ -44,6 +44,8 @@ iopadmap -bits -inpad GP_IBUF OUT:IN -outpad GP_OBUF IN:OUT \
 attrmvcp -attr src -attr LOC t:GP_OBUF t:GP_OBUFT t:GP_IOBUF n:*
 attrmvcp -attr src -attr LOC -driven t:GP_IBUF n:*
 techmap -map greenpak4/cells_map.v
+# GP6 has no dedicated inverter macrocells: fold GP_INV into 2-LUTs
+techmap -map greenpak4/gp6_inv_map.v
 clean
 
 hierarchy -check

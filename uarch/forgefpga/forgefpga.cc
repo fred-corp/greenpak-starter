@@ -430,6 +430,12 @@ struct ForgeFpgaImpl : ViaductAPI
             return id_IOB;
         if (cell_type.in(id_GP_2LUT, id_GP_3LUT, id_GP_4LUT))
             return id_GP_LUT;
+        // GP_DFF*/GP_DLATCH* live in the LUT macrocells (DFF mode)
+        {
+            std::string t = cell_type.str(ctx);
+            if (t.rfind("GP_DFF", 0) == 0 || t.rfind("GP_DLATCH", 0) == 0)
+                return id_GP_LUT;
+        }
         return cell_type;
     }
 
@@ -445,6 +451,25 @@ struct ForgeFpgaImpl : ViaductAPI
             return bel_type.in(id_GP_2LUT, id_GP_3LUT, id_GP_4LUT);
         if (cell_type == id_GP_3LUT)
             return bel_type.in(id_GP_3LUT, id_GP_4LUT);
+        // DFF/latch cells: valid on LUT macrocells that have the DFF
+        // mode ports (the chipdb only adds them to DFF-capable slots),
+        // and only when the cell's control input exists on the BEL
+        // (e.g. GP_DFFR needs nRST, which LUT2-slot DFFs lack)
+        {
+            std::string t = cell_type.str(ctx);
+            if (t.rfind("GP_DFF", 0) == 0 || t.rfind("GP_DLATCH", 0) == 0) {
+                pool<IdString> pins;
+                for (auto pin : ctx->getBelPins(bel))
+                    pins.insert(pin);
+                if (!pins.count(id_CLK) || !pins.count(id_D) || !pins.count(id_Q))
+                    return false;
+                if (cell_type == id_GP_DFFR && !pins.count(id_nRST))
+                    return false;
+                if (cell_type == id_GP_DFFS && !pins.count(id_nSET))
+                    return false;
+                return bel_type.in(id_GP_2LUT, id_GP_3LUT, id_GP_4LUT);
+            }
+        }
         return bel_type == cell_type;
     }
 

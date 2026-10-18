@@ -151,6 +151,17 @@ GREENPAK_PINOUTS = {
 }
 
 
+def greenpak_base(part):
+    """Resolve a part number to its base device (variant handling)."""
+    base = re.sub(r'[A-Za-z]+$', '', part)
+    vp = os.path.join(os.path.dirname(__file__), 'device_regs', 'variants.json')
+    if os.path.exists(vp):
+        with open(vp) as f:
+            variants = json.load(f)
+        base = variants.get(base, {}).get('base', base)
+    return base
+
+
 def greenpak_pin_names(part):
     base = re.sub(r'[A-Za-z]+$', '', part)
     vp = os.path.join(os.path.dirname(__file__), 'device_regs', 'variants.json')
@@ -238,6 +249,86 @@ DATASHEET_TRUTH = {
     },
 }
 
+# Datasheet-confirmed DFF mode of the LUT macrocells (Table 59):
+# per BEL: the LUT-or-DFF mode select register, and the DFF control bits
+# (latch select, Q/nQ output select, nRST/nSET select, initial polarity)
+# which are the high bits of the same truth-table byte. LUT2 slots have
+# no reset input; the MF 16BIT_0 block has both nRST and nSET (no
+# select bit). LUT2_3 (PGEN) and LUT3_6 (pipe delay) have no DFF mode.
+# The DFF port mapping on the fabric wires is fixed by the datasheet
+# (Matrix A/B/C/D = IN3/IN2/IN1/IN0 for 16BIT, IN2/IN1/IN0 for 8BIT;
+# main LUT3 slots: IN0=CLK, IN1=D, IN2=nRST/nSET; LUT2 slots: IN0=CLK,
+# IN1=D) - encoded in greenpak_scaffold().
+DATASHEET_DFF = {
+    'SLG46826': {
+        'LUT2_0': {'mode': 1232, 'latch': 1155, 'out_sel': 1154, 'init': 1153},
+        'LUT2_1': {'mode': 1233, 'latch': 1159, 'out_sel': 1158, 'init': 1157},
+        'LUT2_2': {'mode': 1234, 'latch': 1163, 'out_sel': 1162, 'init': 1161},
+        'LUT3_0': {'mode': 1236, 'latch': 1191, 'out_sel': 1190,
+                   'rst_set': 1189, 'init': 1188},
+        'LUT3_1': {'mode': 1238, 'latch': 1199, 'out_sel': 1198,
+                   'rst_set': 1197, 'init': 1196},
+        'LUT3_2': {'mode': 1239, 'latch': 1207, 'out_sel': 1206,
+                   'rst_set': 1205, 'init': 1204},
+        'LUT3_3': {'mode': 1240, 'latch': 1215, 'out_sel': 1214,
+                   'rst_set': 1213, 'init': 1212},
+        'LUT3_4': {'mode': 1241, 'latch': 1223, 'out_sel': 1222,
+                   'rst_set': 1221, 'init': 1220},
+        'LUT3_5': {'mode': 1242, 'latch': 1231, 'out_sel': 1230,
+                   'rst_set': 1229, 'init': 1228},
+        'LUT4_0': {'mode': 1282, 'latch': 1303, 'out_sel': 1302, 'init': 1301},
+        'LUT3_7': {'mode': 1339, 'latch': 1351, 'out_sel': 1350,
+                   'rst_set': 1349, 'init': 1348},
+        'LUT3_8': {'mode': 1394, 'latch': 1383, 'out_sel': 1382,
+                   'rst_set': 1381, 'init': 1380},
+        'LUT3_9': {'mode': 1411, 'latch': 1423, 'out_sel': 1422,
+                   'rst_set': 1421, 'init': 1420},
+        'LUT3_10': {'mode': 1466, 'latch': 1455, 'out_sel': 1454,
+                    'rst_set': 1453, 'init': 1452},
+        'LUT3_11': {'mode': 1483, 'latch': 1495, 'out_sel': 1494,
+                    'rst_set': 1493, 'init': 1492},
+        'LUT3_12': {'mode': 1538, 'latch': 1527, 'out_sel': 1526,
+                    'rst_set': 1525, 'init': 1524},
+        'LUT3_13': {'mode': 1556, 'latch': 1567, 'out_sel': 1566,
+                    'rst_set': 1565, 'init': 1564},
+    },
+}
+
+
+def greenpak_dff_ports(belname):
+    """DFF-mode port wiring for a LUT macrocell BEL: port name ->
+    (fabric wire, direction). Returns {} when the slot has no DFF."""
+    m2 = re.match(r'^LUT2_(\d)$', belname)
+    m3 = re.match(r'^LUT3_(\d+)$', belname)
+    m4 = re.match(r'^LUT4_(\d)$', belname)
+    if m2 and int(m2.group(1)) <= 2:  # LUT2_3 is the PGEN slot
+        i = m2.group(1)
+        return {'CLK': ('MI_L2_%s_0' % i, 'in'), 'D': ('MI_L2_%s_1' % i, 'in'),
+                'Q': ('MF_L2_%s' % i, 'out')}
+    if m3:
+        i = int(m3.group(1))
+        if i > 6:  # MF 8BIT blocks: D on IN2, nSET/nRST on IN1
+            return {'CLK': ('MI_L3_%d_0' % i, 'in'),
+                    'nRST': ('MI_L3_%d_1' % i, 'in'),
+                    'nSET': ('MI_L3_%d_1' % i, 'in'),
+                    'D': ('MI_L3_%d_2' % i, 'in'),
+                    'Q': ('MF_L3_%d' % i, 'out')}
+        if i < 6:  # main LUT3 slots: D on IN1, nSET/nRST on IN2
+            return {'CLK': ('MI_L3_%d_0' % i, 'in'),
+                    'D': ('MI_L3_%d_1' % i, 'in'),
+                    'nRST': ('MI_L3_%d_2' % i, 'in'),
+                    'nSET': ('MI_L3_%d_2' % i, 'in'),
+                    'Q': ('MF_L3_%d' % i, 'out')}
+        return {}  # LUT3_6 = pipe delay slot
+    if m4:
+        i = m4.group(1)
+        return {'CLK': ('MI_L4_%s_0' % i, 'in'),
+                'nRST': ('MI_L4_%s_1' % i, 'in'),
+                'nSET': ('MI_L4_%s_2' % i, 'in'),
+                'D': ('MI_L4_%s_3' % i, 'in'),
+                'Q': ('MF_L4_%s' % i, 'out')}
+    return {}
+
 
 def greenpak_scaffold(part="SLG46826V", nvm_path=None, n2=16, n3=16, n4=8, ndff=8):
     """GreenPAK-style fabric: fixed-position logic components connected
@@ -308,8 +399,22 @@ def greenpak_scaffold(part="SLG46826V", nvm_path=None, n2=16, n3=16, n4=8, ndff=
                          "ports": {"Y": {"dir": "out", "wire": "%s%d" % (cname, k)}}})
             matrix.append("%s%d" % (cname, k))
 
+    # DFF-mode ports on the LUT macrocells: one BEL per macrocell can
+    # host either a LUT cell or a DFF cell (the hardware mode select);
+    # sharing the BEL makes LUT+DFF double-booking structurally
+    # impossible. Only BELs with a datasheet DFF entry get the ports.
+    dff_table = DATASHEET_DFF.get(greenpak_base(part), {})
+    for bel in bels:
+        if bel['name'] not in dff_table:
+            continue
+        for pname, (wire, pdir) in greenpak_dff_ports(bel['name']).items():
+            bel['ports'][pname] = {'dir': pdir, 'wire': wire}
+
     # Switch matrix crossbar (real crosspoint set pending extraction).
+    # matrix sources: macrocell outputs AND the constant nets - in
+    # hardware GND/VDD are matrix sources (Table 21 values 0/63)
     outputs = [w for w in matrix if w.startswith("MF_") and not w.startswith("MF_DFF")]
+    outputs += [w for w in matrix if re.match(r'^(VCC|GND)_NET\d+$', w)]
     inputs = [w for w in matrix if w.startswith("MI_") or w.startswith("MF_DFF")]
     for dst in inputs:
         for src in outputs:
@@ -462,6 +567,7 @@ def greenpak_nvm_section(part, nvm_path, bels, device_regs=None):
 
     lut_tables = None
     ds_tables = None
+    dff_table = {}
     if device_regs:
         # Variants share a base part's ChipPart model in Go Configure
         # (same dispatch, same NVM size); see device_regs/variants.json
@@ -476,6 +582,7 @@ def greenpak_nvm_section(part, nvm_path, bels, device_regs=None):
         if base in variants:
             base = variants[base]['base']
         ds_tables = DATASHEET_TRUTH.get(base)
+        dff_table = DATASHEET_DFF.get(base, {})
         candidates = [part + '_luts.json',
                       re.sub(r'[A-Za-z]+$', '', part) + '_luts.json',
                       base + '_luts.json']
@@ -516,6 +623,8 @@ def greenpak_nvm_section(part, nvm_path, bels, device_regs=None):
             "name": bel["name"], "type": t,
             "truth_table_bits": truth, "source": src,
         })
+        if bel["name"] in dff_table:
+            bel_bits[-1]["dff"] = dff_table[bel["name"]]
     return {
         "bits": max(free, nbits),
         "default": os.path.abspath(nvm_path),

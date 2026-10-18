@@ -120,6 +120,7 @@ def assemble(chipdb, routed, chipdb_path=''):
     io_oe = matrix.get('io_oe', {})
     stats = {'cells': 0, 'pips': 0, 'bits_set': 0,
              'connections': 0, 'unmapped_pips': 0, 'io_outputs': 0}
+    written_fields = set()   # matrix fields written by routed pips
 
     def setbit(idx):
         if idx < len(bits):
@@ -147,6 +148,34 @@ def assemble(chipdb, routed, chipdb_path=''):
         if not entry:
             continue
         stats['cells'] += 1
+        ctype = cell.get('type', '')
+        if ctype.startswith('GP_DFF') or ctype.startswith('GP_DLATCH'):
+            # DFF/latch mode of a LUT macrocell: set the mode select
+            # and the DFF control bits ([7:4] of the truth byte;
+            # [3:1] for LUT2 slots). The truth table itself is not
+            # used in DFF mode.
+            dff = entry.get('dff')
+            if not dff:
+                print('  warn: BEL %s has no DFF mode (cell %s)'
+                      % (bel, ctype), file=sys.stderr)
+                continue
+            setbit(dff['mode'])
+            def setflag(idx, flag):
+                if flag:
+                    setbit(idx)
+                else:
+                    clearbit(idx)
+            setflag(dff['latch'], ctype.startswith('GP_DLATCH'))
+            setflag(dff['out_sel'], ctype.endswith('I'))  # nQ output
+            if 'rst_set' in dff:
+                # nSET (GP_DFFS/GP_DFFSI) selects SET; nRST/nSR -> RST
+                setflag(dff['rst_set'], ctype in ('GP_DFFS', 'GP_DFFSI',
+                                                 'GP_DLATCHS', 'GP_DLATCHSI'))
+            init = cell.get('params', {}).get('INIT')
+            if init is not None:
+                setflag(dff['init'], str(init).strip('"') == '1')
+            stats['dffs'] = stats.get('dffs', 0) + 1
+            continue
         init = cell.get('params', {}).get('INIT')
         if init is not None and 'truth_table_bits' in entry:
             width = {'GP_2LUT': 2, 'GP_3LUT': 3, 'GP_4LUT': 4}.get(cell['type'], 4)
@@ -168,6 +197,7 @@ def assemble(chipdb, routed, chipdb_path=''):
         # Input Number into the field (datasheet Tables 21/22 join).
         src, dst = pip.get('src'), pip.get('dst')
         if dst in fields:
+            written_fields.add(dst)
             if src in msrc:
                 lo, _hi = fields[dst]
                 v = msrc[src]
@@ -192,6 +222,27 @@ def assemble(chipdb, routed, chipdb_path=''):
                 stats['unmapped_pips'] += 1
                 print('  warn: unmapped matrix source %r -> %r' % (src, dst),
                       file=sys.stderr)
+
+    # DFF control inputs (nRST/nSET) that nothing routed are tied to
+    # VDD: the resets are ACTIVE LOW, so the GND default field would
+    # hold the macrocell in permanent reset (or set) on hardware.
+    bel_ports = {b['name']: b.get('ports', {}) for b in chipdb.get('bels', [])}
+    for cname, cell in routed.get('cells', {}).items():
+        ctype = cell.get('type', '')
+        if not (ctype.startswith('GP_DFF') or ctype.startswith('GP_DLATCH')):
+            continue
+        ports = bel_ports.get(cell.get('bel'), {})
+        for port in ('nRST', 'nSET'):
+            wire = ports.get(port, {}).get('wire')
+            if wire in fields and wire not in written_fields:
+                lo = fields[wire][0]
+                for b in range(6):
+                    if (63 >> b) & 1:   # VDD
+                        setbit(lo + b)
+                    else:
+                        clearbit(lo + b)
+                written_fields.add(wire)
+                stats['bits_set'] += 1
 
     return bits, stats
 
@@ -225,6 +276,8 @@ def main():
 
     print('assembled %s: %d bits (%d bytes), %d cells mapped, %d bits changed'
           % (args.out, len(bits), len(data), stats['cells'], stats['bits_set']))
+    if stats.get('dffs'):
+        print('  DFF/latch macrocells: %d' % stats['dffs'])
     if chipdb.get('nvm', {}).get('matrix'):
         print('  matrix connections written: %d (io outputs: %d, '
               'unmapped sources: %d)'

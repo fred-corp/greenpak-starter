@@ -79,6 +79,14 @@ macrocells (unused input stays unconnected = GND), as in Go Configure.
 Pad model: SCL/SDA pins are not connectable to the matrix (no BEL);
 IO6/IO7 are output-only (GP_OBUF only, no GP_IBUF placement).
 
+Sequential designs work the same way (examples/counter.v): GP_DFF/
+GP_DFFR/GP_DFFS cells place into the DFF mode of the LUT macrocells,
+the assembler sets the mode select (Table 59: 1232+/1236+/1282/1339+)
+plus the control bits (latch select, Q/nQ, nRST/nSET, initial
+polarity), and ties unused reset inputs to VDD (they are active low -
+the GND default would hold the macrocell in permanent reset). verify.py
+simulates clocked cycles and compares against the yosys netlist.
+
 ## GreenPAK6 full flow (synth -> route -> NVM image -> verify)
 
     cd flow
@@ -116,13 +124,16 @@ flips), and only checks the logic the design actually uses.
 
 Current limitations (honest status):
 
-- Combinational logic only: DFF/latch mode of the LUT macrocells (DFF
-  registers, mode selects 1232+/1236+, initial polarity, Q/nQ select)
-  is not encoded yet, so sequential designs do not produce
-  hardware-correct images.
+- Sequential logic is now encoded and verified (examples/counter.v:
+  DFF mode selects, control bits, initial polarity, unused resets tied
+  to VDD), but not yet ground-truth validated against a Go Configure
+  design that uses DFFs - a .gp6 with counters/flip-flops would close
+  that gap like DM8200_migrate.gp6 did for combinational logic.
 - MF-block LUT truth ranges and sources are datasheet-derived but NOT
   ground-truth validated (the reference .gp6 design does not use MF
   LUTs); a Go Configure design using MF LUTs would close that gap.
+- DFF cell variants beyond GP_DFF/GP_DFFR/GP_DFFS (nQ outputs, latches,
+  GP_DFFSR) are assembled but not yet exercised by a test design.
 - IO pin mode registers (777+: input Schmitt/low-voltage, output
   push-pull/open-drain) are not written; pads use the default-NVM
   settings.

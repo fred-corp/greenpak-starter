@@ -62,13 +62,15 @@ docs/usage.md             full documentation
 ## Status (honest)
 
 The SLG46826/SLG46824 flow is validated end-to-end for combinational
-logic: LUT truth tables, matrix connections (fields + Matrix Input
-Numbers from datasheet Tables 21/22), pin map and pad output/OE
-fields are datasheet-exact and proven against a real Go
-Configure-compiled design as well as by assembler round-trip
+AND sequential logic: LUT truth tables, matrix connections (fields +
+Matrix Input Numbers from datasheet Tables 21/22), pin map, pad
+output/OE fields, and the DFF mode of the LUT macrocells (mode
+selects, control bits, initial polarity, unused resets tied to VDD).
+Combinational encoding is proven against a real Go Configure-compiled
+design; everything is checked by assembler round-trip
 (bitstream/verify.py re-decodes every image and compares against the
-synthesized netlist for all input combinations; it detects corrupted
-truth tables and connection fields).
+synthesized netlist, clocked cycle-by-cycle for sequential designs;
+it detects corrupted truth tables and connection fields).
 
 The fabric model covers the full logic inventory: 4x LUT2 + 7x LUT3
 macrocells + the 8 multifunction-block LUTs (LUT3_7..13, LUT4_0).
@@ -76,11 +78,13 @@ MF LUT truth ranges are datasheet-derived but not yet ground-truth
 validated. SCL/SDA pads are not matrix-connectable; IO6/IO7 are
 output-only.
 
-Not yet hardware-correct: sequential logic (DFF/latch mode
-registers) and per-pin IO mode configuration. Shadow-mode flashing
-is reversible and safe; OTP mode requires the datasheet programming
-voltage on VDD (see the flasher warning) and a first-hardware-verify
-before trusting it.
+Not yet ground-truth validated: DFF-mode encoding and MF-block LUTs
+are datasheet-derived and round-trip verified, but no Go Configure
+design using them is available yet to confirm against. Still open:
+per-pin IO mode configuration. Shadow-mode flashing is reversible
+and safe; OTP mode requires the datasheet programming voltage on VDD
+(see the flasher warning) and a first-hardware-verify before trusting
+it.
 
 
 ## License & Acknowledgements
