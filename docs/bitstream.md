@@ -357,3 +357,16 @@ device_regs format the decompilation extractor produces:
   (Reg[232:243..415] region)
 These are datasheet-authoritative (not scaffold): gen_chipdb.py picks
 them up automatically for those parts.
+
+## I2C flash protocol (datasheet-exact, SLG46826 sec. 15.4/15.6)
+
+- Control Byte = Control Code 0001 | Block Address A10..A8 | R/W
+  -> default write byte 0x08 (block 0)
+- register configuration data = BLOCK 0: the word address IS the
+  register map byte (0x00-0xFF, Table 59 addresses) - the flasher's
+  SHADOW_REG corrected from 0x10 to 0x00
+- Sequential Write auto-increments the address counter (full
+  256-byte shadow in one transaction)
+- I2C Serial Reset = register bit [1601] (POR + reload from NVM);
+  IO latching during writes = register bit [1602]
+- byte-write masking register at 0xC9 (partly-lock protection modes)

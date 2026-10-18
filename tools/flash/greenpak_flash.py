@@ -34,9 +34,18 @@ import argparse
 import sys
 import time
 
-I2C_ADDR = 0x08          # 7-bit device address (datasheet dependent)
-SHADOW_REG = 0x10        # first register of the config shadow
-PAGE_SIZE = 32           # bytes per I2C transaction burst
+# Datasheet-exact (SLG46826 DS 3.18 sec. 15.4/15.6):
+#   Control Byte = [Control Code 0001 | Block Address A10..A8 | R/W]
+#   -> default write control byte = 0b0001_000_0 = 0x08
+#   Register configuration data = block 0: word address 0x00-0xFF IS
+#   the register map (Table 59 byte addresses); sequential writes
+#   auto-increment. I2C reset = register bit [1601]; IO latching
+#   during writes = register bit [1602].
+I2C_ADDR = 0x08          # 0b0001_000 | R/W
+SHADOW_REG = 0x00        # block 0 word address = register map byte
+PAGE_SIZE = 256          # full register map in one sequential write
+REG_RESET_BIT = 1601     # POR + reload from NVM when set
+REG_LATCH_BIT = 1602     # latch IOs during writes when set
 OTP_FORCE_DELTA = 5.0    # datasheets require VPP before OTP commands
 
 
