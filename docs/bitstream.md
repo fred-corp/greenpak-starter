@@ -344,3 +344,16 @@ SLG47910 (r19ds0120):
   bits), not the GreenPAK-style matrix - the ForgeFPGA 479xx
   bitstream needs its own model (the ForgeK2 decompiled classes
   remain the source)
+
+## Datasheet-derived device tables (SLG46533/46537, SLG47011)
+
+`analysis/gen_device_regs_from_ds.py` encodes the LUT register maps
+from the SLG46533/SLG46537/SLG47011 datasheets into the same
+device_regs format the decompilation extractor produces:
+- SLG46533/46537 (GreenPAK5, shared layout): 3x 2-bit + 18x 3-bit +
+  2x 4-bit LUTs (bits 1200-1607 region; the PDFs have typos for the
+  LUT1/LUT9 ranges - resolved from the stride patterns)
+- SLG47011 (ForgeFPGA): 1x 2-bit + 8x 3-bit + 1x 4-bit macrocells
+  (Reg[232:243..415] region)
+These are datasheet-authoritative (not scaffold): gen_chipdb.py picks
+them up automatically for those parts.

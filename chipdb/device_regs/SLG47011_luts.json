@@ -1,0 +1,179 @@
+{
+ "device": "SLG47011",
+ "macrocells": [
+  {
+   "index": 0,
+   "slot": "ds_LUT2_0",
+   "truth_regs": [
+    232,
+    233,
+    234,
+    235
+   ],
+   "lut_out_reg": null,
+   "dff_regs": {},
+   "source": "datasheet register map"
+  },
+  {
+   "index": 1,
+   "slot": "ds_LUT3_1",
+   "truth_regs": [
+    236,
+    237,
+    238,
+    239,
+    240,
+    241,
+    242,
+    243
+   ],
+   "lut_out_reg": null,
+   "dff_regs": {},
+   "source": "datasheet register map"
+  },
+  {
+   "index": 2,
+   "slot": "ds_LUT3_2",
+   "truth_regs": [
+    244,
+    245,
+    246,
+    247,
+    248,
+    249,
+    250,
+    251
+   ],
+   "lut_out_reg": null,
+   "dff_regs": {},
+   "source": "datasheet register map"
+  },
+  {
+   "index": 3,
+   "slot": "ds_LUT3_3",
+   "truth_regs": [
+    252,
+    253,
+    254,
+    255,
+    256,
+    257,
+    258,
+    259
+   ],
+   "lut_out_reg": null,
+   "dff_regs": {},
+   "source": "datasheet register map"
+  },
+  {
+   "index": 4,
+   "slot": "ds_LUT3_4",
+   "truth_regs": [
+    260,
+    261,
+    262,
+    263,
+    264,
+    265,
+    266,
+    267
+   ],
+   "lut_out_reg": null,
+   "dff_regs": {},
+   "source": "datasheet register map"
+  },
+  {
+   "index": 5,
+   "slot": "ds_LUT3_5",
+   "truth_regs": [
+    272,
+    273,
+    274,
+    275,
+    276,
+    277,
+    278,
+    279
+   ],
+   "lut_out_reg": null,
+   "dff_regs": {},
+   "source": "datasheet register map"
+  },
+  {
+   "index": 6,
+   "slot": "ds_LUT3_6",
+   "truth_regs": [
+    288,
+    289,
+    290,
+    291,
+    292,
+    293,
+    294,
+    295
+   ],
+   "lut_out_reg": null,
+   "dff_regs": {},
+   "source": "datasheet register map"
+  },
+  {
+   "index": 7,
+   "slot": "ds_LUT3_7",
+   "truth_regs": [
+    304,
+    305,
+    306,
+    307,
+    308,
+    309,
+    310,
+    311,
+    312,
+    313,
+    314,
+    315,
+    316,
+    317,
+    318,
+    319
+   ],
+   "lut_out_reg": null,
+   "dff_regs": {},
+   "source": "datasheet register map"
+  },
+  {
+   "index": 8,
+   "slot": "ds_LUT3_8",
+   "truth_regs": [
+    352,
+    353,
+    354,
+    355,
+    356,
+    357,
+    358,
+    359
+   ],
+   "lut_out_reg": null,
+   "dff_regs": {},
+   "source": "datasheet register map"
+  },
+  {
+   "index": 9,
+   "slot": "ds_LUT3_9",
+   "truth_regs": [
+    408,
+    409,
+    410,
+    411,
+    412,
+    413,
+    414,
+    415
+   ],
+   "lut_out_reg": null,
+   "dff_regs": {},
+   "source": "datasheet register map"
+  }
+ ]
+}
