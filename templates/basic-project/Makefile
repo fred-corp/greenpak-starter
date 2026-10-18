@@ -24,8 +24,9 @@ FREQ   ?= 1
 # port-to-pin constraints (set_io / XDC style)
 PCF    ?= pinout.pcf
 
-# Repo root (this Makefile lives at <repo>/templates/basic-project)
-TOOLS  := $(shell cd ../.. && pwd)
+# Path to the greenpak-starter checkout (override with TOOLS=... if you
+# cloned it elsewhere; the template works from any directory)
+TOOLS  ?= $(HOME)/Downloads/greenpak-starter
 FLOW    = $(TOOLS)/flow
 CHIPDB  = $(TOOLS)/chipdb/$(shell echo $(PART) | tr 'A-Z' 'a-z' | sed 's/[a-z]*$$//').json
 NEXTPNR ?= $(HOME)/Downloads/nextpnr/build/nextpnr-generic
