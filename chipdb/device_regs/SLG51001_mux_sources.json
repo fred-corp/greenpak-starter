@@ -1,0 +1,55 @@
+{
+ "device": "SLG51001",
+ "muxIns": [
+  {
+   "item": "0xb0",
+   "call": "ChipCanary22pwrSqncrCompositeBlock"
+  },
+  {
+   "item": "0x18",
+   "field": "0x340"
+  }
+ ],
+ "muxOuts": [
+  {
+   "item": "0xb0",
+   "call": "ChipCanary22pwrSqncrCompositeBlock"
+  },
+  {
+   "item": "0x18",
+   "field": "0x338"
+  },
+  {
+   "item": "0x20",
+   "field": "0x338"
+  },
+  {
+   "item": "0x28",
+   "field": "0x338"
+  },
+  {
+   "item": "0x80",
+   "call": "LdoCanary9enablePin"
+  },
+  {
+   "item": "0x90",
+   "call": "LdoCanary9enablePin"
+  },
+  {
+   "item": "0x98",
+   "call": "LdoCanary9enablePin"
+  },
+  {
+   "item": "0xa0",
+   "call": "LdoCanary9enablePin"
+  },
+  {
+   "item": "0xa8",
+   "call": "LdoCanary9enablePin"
+  },
+  {
+   "item": "0x88",
+   "call": "LdoCanary9enablePin"
+  }
+ ]
+}

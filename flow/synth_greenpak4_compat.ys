@@ -1,0 +1,53 @@
+# GreenPAK synthesis flow: Verilog -> GP cells -> JSON for nextpnr
+# (greenpak/greenpak4 uarch, chipdb from chipdb/gen_chipdb.py).
+#
+# Works with ANY modern yosys - no ENABLE_GREENPAK4 build required.
+# This replicates yosys v0.59's compiled-in synth_greenpak4 (removed
+# from master) using the techlib vendored in greenpak4/. If your yosys
+# still has the native command, flow/greenpak_synth_native.ys is the
+# original one-liner flow.
+#
+# Reads design.v, writes out.json. Run from the flow/ directory:
+#   yosys -s greenpak_synth.ys
+
+read_verilog -lib greenpak4/cells_sim.v
+read_verilog design.v
+
+hierarchy -check -top top
+proc
+flatten
+tribuf -logic
+synth -run coarse
+
+extract_counter -pout GP_DCMP,GP_DAC -maxwidth 14
+clean
+opt -fast -mux_undef -undriven -fine
+memory_map
+opt -undriven -fine
+techmap -map +/techmap.v -map greenpak4/cells_latch.v
+dfflibmap -prepare -liberty greenpak4/gp_dff.lib
+opt -fast -noclkinv -noff
+
+# LUT mapping (nlutmap was removed from modern yosys; abc -lut 4 +
+# cells_map.v maps $lut -> GP_2LUT/GP_3LUT/GP_4LUT)
+abc -lut 4
+clean
+
+shregmap -tech greenpak4
+dfflibmap -liberty greenpak4/gp_dff.lib
+dffinit -ff GP_DFF Q INIT
+dffinit -ff GP_DFFR Q INIT
+dffinit -ff GP_DFFS Q INIT
+dffinit -ff GP_DFFSR Q INIT
+iopadmap -bits -inpad GP_IBUF OUT:IN -outpad GP_OBUF IN:OUT \
+  -inoutpad GP_OBUF OUT:IN -toutpad GP_OBUFT OE:IN:OUT \
+  -tinoutpad GP_IOBUF OE:OUT:IN:IO
+attrmvcp -attr src -attr LOC t:GP_OBUF t:GP_OBUFT t:GP_IOBUF n:*
+attrmvcp -attr src -attr LOC -driven t:GP_IBUF n:*
+techmap -map greenpak4/cells_map.v
+clean
+
+hierarchy -check
+stat
+check -noinit
+write_json out.json

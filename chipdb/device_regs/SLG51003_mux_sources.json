@@ -1,0 +1,275 @@
+{
+ "device": "SLG51003",
+ "muxIns": [
+  {
+   "item": "0x40",
+   "call": "LogicMacrocell6outPin"
+  },
+  {
+   "item": "0x48",
+   "call": "LogicMacrocell6outPin"
+  },
+  {
+   "item": "0x100",
+   "call": "TempSensor6outPin"
+  },
+  {
+   "item": "0x38",
+   "call": "CrashSequenceMacrocell17crashEventFlagPin"
+  },
+  {
+   "item": "0x58",
+   "field": "0x340"
+  },
+  {
+   "item": "0x60",
+   "field": "0x340"
+  },
+  {
+   "item": "0x68",
+   "field": "0x340"
+  },
+  {
+   "item": "0x70",
+   "field": "0x340"
+  },
+  {
+   "item": "0x78",
+   "field": "0x340"
+  },
+  {
+   "item": "0x128",
+   "call": "LdoCanary9vOutOkPin"
+  },
+  {
+   "item": "0x130",
+   "call": "LdoCanaryXl9ldoCanary"
+  },
+  {
+   "item": "0x138",
+   "call": "LdoCanaryXl9ldoCanary"
+  },
+  {
+   "item": "0x128",
+   "call": "LdoCanary15currentLimitPin"
+  },
+  {
+   "item": "0x130",
+   "call": "LdoCanaryXl9ldoCanary"
+  },
+  {
+   "item": "0x138",
+   "call": "LdoCanaryXl9ldoCanary"
+  },
+  {
+   "item": "0x140",
+   "call": "DeviceInterruptRequest6outPin"
+  },
+  {
+   "item": "0xd0",
+   "field": "0x398"
+  },
+  {
+   "item": "0xd8",
+   "field": "0x398"
+  },
+  {
+   "item": "0xe0",
+   "field": "0x398"
+  },
+  {
+   "item": "0xe8",
+   "field": "0x398"
+  },
+  {
+   "item": "0xf0",
+   "field": "0x398"
+  },
+  {
+   "item": "0xf8",
+   "field": "0x398"
+  },
+  {
+   "item": "0xa8",
+   "call": "CanaryXlDelay6outPin"
+  },
+  {
+   "item": "0xb0",
+   "call": "CanaryXlDelay6outPin"
+  },
+  {
+   "item": "0xb8",
+   "call": "CanaryXlDelay6outPin"
+  },
+  {
+   "item": "0x120",
+   "field": "0x390"
+  },
+  {
+   "item": "0x120",
+   "field": "0x398"
+  }
+ ],
+ "muxOuts": [
+  {
+   "item": "0x140",
+   "call": "DeviceInterruptRequest14matrixEventPin"
+  },
+  {
+   "item": "0x58",
+   "field": "0x338"
+  },
+  {
+   "item": "0x60",
+   "field": "0x338"
+  },
+  {
+   "item": "0x68",
+   "field": "0x338"
+  },
+  {
+   "item": "0x70",
+   "field": "0x338"
+  },
+  {
+   "item": "0x128",
+   "call": "LdoCanary9enablePin"
+  },
+  {
+   "item": "0x130",
+   "call": "LdoCanaryXl9ldoCanary"
+  },
+  {
+   "item": "0x138",
+   "call": "LdoCanaryXl9ldoCanary"
+  },
+  {
+   "item": "0xd0",
+   "field": "0x380"
+  },
+  {
+   "item": "0xd0",
+   "field": "0x388"
+  },
+  {
+   "item": "0xd0",
+   "field": "0x390"
+  },
+  {
+   "item": "0xd8",
+   "field": "0x380"
+  },
+  {
+   "item": "0xd8",
+   "field": "0x388"
+  },
+  {
+   "item": "0xd8",
+   "field": "0x390"
+  },
+  {
+   "item": "0xe0",
+   "field": "0x380"
+  },
+  {
+   "item": "0xe0",
+   "field": "0x388"
+  },
+  {
+   "item": "0xe0",
+   "field": "0x390"
+  },
+  {
+   "item": "0xe8",
+   "field": "0x380"
+  },
+  {
+   "item": "0xe8",
+   "field": "0x388"
+  },
+  {
+   "item": "0xe8",
+   "field": "0x390"
+  },
+  {
+   "item": "0xf0",
+   "field": "0x380"
+  },
+  {
+   "item": "0xf0",
+   "field": "0x388"
+  },
+  {
+   "item": "0xf0",
+   "field": "0x390"
+  },
+  {
+   "item": "0xf8",
+   "field": "0x380"
+  },
+  {
+   "item": "0xf8",
+   "field": "0x388"
+  },
+  {
+   "item": "0xf8",
+   "field": "0x390"
+  },
+  {
+   "item": "0xa8",
+   "call": "CanaryXlDelay9enablePin"
+  },
+  {
+   "item": "0xa8",
+   "call": "CanaryXlDelay5upPin"
+  },
+  {
+   "item": "0xa8",
+   "call": "CanaryXlDelay7downPin"
+  },
+  {
+   "item": "0xb0",
+   "call": "CanaryXlDelay9enablePin"
+  },
+  {
+   "item": "0xb0",
+   "call": "CanaryXlDelay5upPin"
+  },
+  {
+   "item": "0xb0",
+   "call": "CanaryXlDelay7downPin"
+  },
+  {
+   "item": "0xb8",
+   "call": "CanaryXlDelay9enablePin"
+  },
+  {
+   "item": "0xb8",
+   "call": "CanaryXlDelay5upPin"
+  },
+  {
+   "item": "0xb8",
+   "call": "CanaryXlDelay7downPin"
+  },
+  {
+   "item": "0x120",
+   "field": "0x370"
+  },
+  {
+   "item": "0x120",
+   "field": "0x378"
+  },
+  {
+   "item": "0x120",
+   "field": "0x380"
+  },
+  {
+   "item": "0x38",
+   "call": "CrashSequenceMacrocell14crashDetectPin"
+  },
+  {
+   "item": "0x38",
+   "call": "CrashSequenceMacrocell13forceResetPin"
+  }
+ ]
+}

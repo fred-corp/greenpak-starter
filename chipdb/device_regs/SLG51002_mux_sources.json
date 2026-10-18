@@ -1,0 +1,331 @@
+{
+ "device": "SLG51002",
+ "muxIns": [
+  {
+   "item": "0x178",
+   "call": "ChipCanary22pwrSqncrCompositeBlock"
+  },
+  {
+   "item": "0x18",
+   "field": "0x340"
+  },
+  {
+   "item": "0x20",
+   "field": "0x340"
+  },
+  {
+   "item": "0x28",
+   "field": "0x340"
+  },
+  {
+   "item": "0x30",
+   "field": "0x340"
+  },
+  {
+   "item": "0x38",
+   "field": "0x340"
+  },
+  {
+   "item": "0x40",
+   "field": "0x340"
+  },
+  {
+   "item": "0xf8",
+   "call": "LdoCanaryXl9ldoCanary"
+  },
+  {
+   "item": "0x100",
+   "call": "LdoCanaryXl9ldoCanary"
+  },
+  {
+   "item": "0x108",
+   "call": "LdoCanaryXl9ldoCanary"
+  },
+  {
+   "item": "0x110",
+   "call": "LdoCanaryXl9ldoCanary"
+  },
+  {
+   "item": "0x138",
+   "call": "LdoSharedCanaryXl12flagVoutPin0"
+  },
+  {
+   "item": "0x138",
+   "call": "LdoSharedCanaryXl12flagVoutPin1"
+  },
+  {
+   "item": "0x130",
+   "call": "LdoCanaryXl9ldoCanary"
+  },
+  {
+   "item": "0xf8",
+   "call": "LdoCanaryXl9ldoCanary"
+  },
+  {
+   "item": "0x100",
+   "call": "LdoCanaryXl9ldoCanary"
+  },
+  {
+   "item": "0x108",
+   "call": "LdoCanaryXl9ldoCanary"
+  },
+  {
+   "item": "0x110",
+   "call": "LdoCanaryXl9ldoCanary"
+  },
+  {
+   "item": "0x118",
+   "call": "LdoCanaryXl9ldoCanary"
+  },
+  {
+   "item": "0x120",
+   "call": "LdoCanaryXl9ldoCanary"
+  },
+  {
+   "item": "0x128",
+   "call": "LdoCanaryXl9ldoCanary"
+  },
+  {
+   "item": "0x48",
+   "field": "0x398"
+  },
+  {
+   "item": "0x50",
+   "field": "0x398"
+  },
+  {
+   "item": "0x58",
+   "field": "0x398"
+  },
+  {
+   "item": "0x60",
+   "field": "0x398"
+  },
+  {
+   "item": "0x68",
+   "field": "0x398"
+  },
+  {
+   "item": "0x70",
+   "field": "0x398"
+  },
+  {
+   "item": "0x78",
+   "field": "0x398"
+  },
+  {
+   "item": "0x160",
+   "call": "CanaryXlDelay6outPin"
+  },
+  {
+   "item": "0x168",
+   "call": "CanaryXlDelay6outPin"
+  },
+  {
+   "item": "0x170",
+   "call": "CanaryXlDelay6outPin"
+  },
+  {
+   "item": "0x158",
+   "field": "0x390"
+  },
+  {
+   "item": "0x158",
+   "field": "0x398"
+  },
+  {
+   "item": "0x138",
+   "call": "LdoSharedCanaryXl12flagVoutPin2"
+  }
+ ],
+ "muxOuts": [
+  {
+   "item": "0x178",
+   "call": "ChipCanary22pwrSqncrCompositeBlock"
+  },
+  {
+   "item": "0x18",
+   "field": "0x338"
+  },
+  {
+   "item": "0x20",
+   "field": "0x338"
+  },
+  {
+   "item": "0x28",
+   "field": "0x338"
+  },
+  {
+   "item": "0x30",
+   "field": "0x338"
+  },
+  {
+   "item": "0x38",
+   "field": "0x338"
+  },
+  {
+   "item": "0xf8",
+   "call": "LdoCanaryXl9ldoCanary"
+  },
+  {
+   "item": "0x100",
+   "call": "LdoCanaryXl9ldoCanary"
+  },
+  {
+   "item": "0x108",
+   "call": "LdoCanaryXl9ldoCanary"
+  },
+  {
+   "item": "0x110",
+   "call": "LdoCanaryXl9ldoCanary"
+  },
+  {
+   "item": "0x118",
+   "call": "LdoCanaryXl9ldoCanary"
+  },
+  {
+   "item": "0x120",
+   "call": "LdoCanaryXl9ldoCanary"
+  },
+  {
+   "item": "0x128",
+   "call": "LdoCanaryXl9ldoCanary"
+  },
+  {
+   "item": "0x130",
+   "call": "LdoCanaryXl9ldoCanary"
+  },
+  {
+   "item": "0x48",
+   "field": "0x380"
+  },
+  {
+   "item": "0x48",
+   "field": "0x388"
+  },
+  {
+   "item": "0x48",
+   "field": "0x390"
+  },
+  {
+   "item": "0x50",
+   "field": "0x380"
+  },
+  {
+   "item": "0x50",
+   "field": "0x388"
+  },
+  {
+   "item": "0x50",
+   "field": "0x390"
+  },
+  {
+   "item": "0x58",
+   "field": "0x380"
+  },
+  {
+   "item": "0x58",
+   "field": "0x388"
+  },
+  {
+   "item": "0x58",
+   "field": "0x390"
+  },
+  {
+   "item": "0x60",
+   "field": "0x380"
+  },
+  {
+   "item": "0x60",
+   "field": "0x388"
+  },
+  {
+   "item": "0x60",
+   "field": "0x390"
+  },
+  {
+   "item": "0x68",
+   "field": "0x380"
+  },
+  {
+   "item": "0x68",
+   "field": "0x388"
+  },
+  {
+   "item": "0x68",
+   "field": "0x390"
+  },
+  {
+   "item": "0x70",
+   "field": "0x380"
+  },
+  {
+   "item": "0x70",
+   "field": "0x388"
+  },
+  {
+   "item": "0x70",
+   "field": "0x390"
+  },
+  {
+   "item": "0x78",
+   "field": "0x380"
+  },
+  {
+   "item": "0x78",
+   "field": "0x388"
+  },
+  {
+   "item": "0x78",
+   "field": "0x390"
+  },
+  {
+   "item": "0x160",
+   "call": "CanaryXlDelay9enablePin"
+  },
+  {
+   "item": "0x160",
+   "call": "CanaryXlDelay5upPin"
+  },
+  {
+   "item": "0x160",
+   "call": "CanaryXlDelay7downPin"
+  },
+  {
+   "item": "0x168",
+   "call": "CanaryXlDelay9enablePin"
+  },
+  {
+   "item": "0x168",
+   "call": "CanaryXlDelay5upPin"
+  },
+  {
+   "item": "0x168",
+   "call": "CanaryXlDelay7downPin"
+  },
+  {
+   "item": "0x170",
+   "call": "CanaryXlDelay9enablePin"
+  },
+  {
+   "item": "0x170",
+   "call": "CanaryXlDelay5upPin"
+  },
+  {
+   "item": "0x170",
+   "call": "CanaryXlDelay7downPin"
+  },
+  {
+   "item": "0x158",
+   "field": "0x370"
+  },
+  {
+   "item": "0x158",
+   "field": "0x378"
+  },
+  {
+   "item": "0x158",
+   "field": "0x380"
+  }
+ ]
+}

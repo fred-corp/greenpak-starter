@@ -1,0 +1,32 @@
+# ForgeFPGA synthesis flow: Verilog -> LUT4 macrocell cells -> JSON for
+# nextpnr-generic (--uarch forgefpga --vopt chipdb=slg47xxx.json).
+#
+# Mirrors the canonical nextpnr-generic viaduct example flow:
+# prims as library cells, IO buffer insertion, dfflegalize, abc -lut 4.
+#
+# Usage: yosys -s forgefpga_synth.ys   (run from the flow/ directory)
+
+read_verilog -lib forgefpga_prims.v
+read_verilog design.v
+
+hierarchy -check -top top
+proc
+flatten
+tribuf -logic
+deminout
+synth -run coarse
+memory_map
+opt -full
+iopadmap -bits -inpad INBUF O:PAD -outpad OUTBUF I:PAD
+techmap -map +/techmap.v
+opt -fast
+dfflegalize -cell $_DFF_P_ 0
+abc -lut 4 -dress
+clean
+techmap -map forgefpga_map.v
+clean
+hierarchy -check
+stat
+
+write_verilog -noattr out.v
+write_json out.json

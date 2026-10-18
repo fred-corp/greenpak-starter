@@ -1,0 +1,571 @@
+{
+ "device": "SLG47105",
+ "muxIns": [
+  {
+   "item": "0xb0",
+   "field": "0x398"
+  },
+  {
+   "item": "0xb8",
+   "field": "0x398"
+  },
+  {
+   "item": "0xc0",
+   "field": "0x398"
+  },
+  {
+   "item": "0xd0",
+   "field": "0x398"
+  },
+  {
+   "item": "0xd8",
+   "call": "LutDffLatchPwmChopper7outQPin"
+  },
+  {
+   "item": "0xe0",
+   "call": "LutDffLatchPwmChopper7outQPin"
+  },
+  {
+   "item": "0xe8",
+   "field": "0x398"
+  },
+  {
+   "item": "0xf0",
+   "field": "0x398"
+  },
+  {
+   "item": "0xf8",
+   "field": "0x398"
+  },
+  {
+   "item": "0x108",
+   "field": "0x398"
+  },
+  {
+   "item": "0x100",
+   "field": "0x370"
+  },
+  {
+   "item": "0x100",
+   "field": "0x378"
+  },
+  {
+   "item": "0x100",
+   "field": "0x380"
+  },
+  {
+   "item": "0x138",
+   "field": "0x390"
+  },
+  {
+   "item": "0x118",
+   "field": "0x398"
+  },
+  {
+   "item": "0x120",
+   "field": "0x398"
+  },
+  {
+   "item": "0x128",
+   "field": "0x398"
+  },
+  {
+   "item": "0x130",
+   "field": "0x398"
+  },
+  {
+   "item": "0x118",
+   "field": "0x390"
+  },
+  {
+   "item": "0x120",
+   "field": "0x390"
+  },
+  {
+   "item": "0x128",
+   "field": "0x390"
+  },
+  {
+   "item": "0x130",
+   "field": "0x390"
+  },
+  {
+   "item": "0x110",
+   "field": "0x398"
+  },
+  {
+   "item": "0x110",
+   "field": "0x390"
+  },
+  {
+   "item": "0x28",
+   "field": "0x340"
+  },
+  {
+   "item": "0x30",
+   "field": "0x340"
+  },
+  {
+   "item": "0x68",
+   "field": "0x340"
+  },
+  {
+   "item": "0x80",
+   "field": "0x340"
+  },
+  {
+   "item": "0x88",
+   "field": "0x340"
+  },
+  {
+   "item": "0x90",
+   "field": "0x340"
+  },
+  {
+   "item": "0x70",
+   "field": "0x340"
+  },
+  {
+   "item": "0x78",
+   "field": "0x340"
+  },
+  {
+   "item": "0x198",
+   "call": "Pwm9outPosPin"
+  },
+  {
+   "item": "0x198",
+   "call": "Pwm9outNegPin"
+  },
+  {
+   "item": "0x178",
+   "call": "DifferentialAmplifier9upwardPin"
+  },
+  {
+   "item": "0x178",
+   "call": "DifferentialAmplifier8equalPin"
+  },
+  {
+   "item": "0x1a0",
+   "field": "0x330"
+  },
+  {
+   "item": "0x1a8",
+   "field": "0x330"
+  },
+  {
+   "item": "0x98",
+   "call": "CurrentSenseComparator6outPin"
+  },
+  {
+   "item": "0xa0",
+   "call": "CurrentSenseComparator6outPin"
+  },
+  {
+   "item": "0x180",
+   "call": "HBridgeLogic15generalFaultPin"
+  },
+  {
+   "item": "0x188",
+   "call": "HBridgeLogic15generalFaultPin"
+  },
+  {
+   "item": "0xa8",
+   "field": "0x70"
+  },
+  {
+   "item": "0x158",
+   "field": "0x748"
+  },
+  {
+   "item": "0x158",
+   "field": "0x7b8"
+  },
+  {
+   "item": "0x150",
+   "field": "0x698"
+  },
+  {
+   "item": "0x150",
+   "field": "0x6a0"
+  },
+  {
+   "item": "0x148",
+   "field": "0x340"
+  },
+  {
+   "item": "0x198",
+   "call": "Pwm14periodStartPin"
+  },
+  {
+   "item": "0x180",
+   "call": "HBridgeLogic11ocpFaultPin"
+  },
+  {
+   "item": "0x188",
+   "call": "HBridgeLogic11ocpFaultPin"
+  },
+  {
+   "item": "0x180",
+   "call": "HBridgeLogic11tsdFaultPin"
+  }
+ ],
+ "muxOuts": [
+  {
+   "item": "0x28",
+   "field": "0x338"
+  },
+  {
+   "item": "0x28",
+   "field": "0x328"
+  },
+  {
+   "item": "0x68",
+   "field": "0x338"
+  },
+  {
+   "item": "0x68",
+   "field": "0x328"
+  },
+  {
+   "item": "0x70",
+   "field": "0x338"
+  },
+  {
+   "item": "0x78",
+   "field": "0x338"
+  },
+  {
+   "item": "0x80",
+   "field": "0x338"
+  },
+  {
+   "item": "0x80",
+   "field": "0x328"
+  },
+  {
+   "item": "0x88",
+   "field": "0x338"
+  },
+  {
+   "item": "0x88",
+   "field": "0x328"
+  },
+  {
+   "item": "0x90",
+   "field": "0x338"
+  },
+  {
+   "item": "0x90",
+   "field": "0x328"
+  },
+  {
+   "item": "0x180",
+   "call": "HBridgeLogic8in0EnPin"
+  },
+  {
+   "item": "0x180",
+   "call": "HBridgeLogic6oe0Pin"
+  },
+  {
+   "item": "0x180",
+   "call": "HBridgeLogic8in1PhPin"
+  },
+  {
+   "item": "0x180",
+   "call": "HBridgeLogic6oe1Pin"
+  },
+  {
+   "item": "0x188",
+   "call": "HBridgeLogic8in0EnPin"
+  },
+  {
+   "item": "0x188",
+   "call": "HBridgeLogic6oe0Pin"
+  },
+  {
+   "item": "0x188",
+   "call": "HBridgeLogic8in1PhPin"
+  },
+  {
+   "item": "0x188",
+   "call": "HBridgeLogic6oe1Pin"
+  },
+  {
+   "item": "0x180",
+   "call": "HBridgeLogic9sleep0Pin"
+  },
+  {
+   "item": "0x98",
+   "call": "CurrentSenseComparator9sleepPin0"
+  },
+  {
+   "item": "0x180",
+   "call": "HBridgeLogic9sleep1Pin"
+  },
+  {
+   "item": "0x98",
+   "call": "CurrentSenseComparator9sleepPin1"
+  },
+  {
+   "item": "0x188",
+   "call": "HBridgeLogic9sleep0Pin"
+  },
+  {
+   "item": "0xa0",
+   "call": "CurrentSenseComparator9sleepPin0"
+  },
+  {
+   "item": "0x188",
+   "call": "HBridgeLogic9sleep1Pin"
+  },
+  {
+   "item": "0xa0",
+   "call": "CurrentSenseComparator9sleepPin1"
+  },
+  {
+   "item": "0xb0",
+   "field": "0x380"
+  },
+  {
+   "item": "0xb0",
+   "field": "0x388"
+  },
+  {
+   "item": "0xb8",
+   "field": "0x380"
+  },
+  {
+   "item": "0xb8",
+   "field": "0x388"
+  },
+  {
+   "item": "0xc0",
+   "field": "0x380"
+  },
+  {
+   "item": "0xc0",
+   "field": "0x388"
+  },
+  {
+   "item": "0xd0",
+   "field": "0x380"
+  },
+  {
+   "item": "0xd0",
+   "field": "0x388"
+  },
+  {
+   "item": "0xd0",
+   "field": "0x390"
+  },
+  {
+   "item": "0xd8",
+   "call": "LutDffLatchPwmChopper16in0CkBlankingPin"
+  },
+  {
+   "item": "0xd8",
+   "call": "LutDffLatchPwmChopper11in1DChopPin"
+  },
+  {
+   "item": "0xd8",
+   "call": "LutDffLatchPwmChopper17in2SetResetPwmPin"
+  },
+  {
+   "item": "0xe0",
+   "call": "LutDffLatchPwmChopper16in0CkBlankingPin"
+  },
+  {
+   "item": "0xe0",
+   "call": "LutDffLatchPwmChopper11in1DChopPin"
+  },
+  {
+   "item": "0xe0",
+   "call": "LutDffLatchPwmChopper17in2SetResetPwmPin"
+  },
+  {
+   "item": "0xe8",
+   "field": "0x380"
+  },
+  {
+   "item": "0xe8",
+   "field": "0x388"
+  },
+  {
+   "item": "0xe8",
+   "field": "0x390"
+  },
+  {
+   "item": "0xf0",
+   "field": "0x380"
+  },
+  {
+   "item": "0xf0",
+   "field": "0x388"
+  },
+  {
+   "item": "0xf0",
+   "field": "0x390"
+  },
+  {
+   "item": "0xf8",
+   "field": "0x380"
+  },
+  {
+   "item": "0xf8",
+   "field": "0x388"
+  },
+  {
+   "item": "0xf8",
+   "field": "0x390"
+  },
+  {
+   "item": "0x100",
+   "field": "0x388"
+  },
+  {
+   "item": "0x100",
+   "field": "0x390"
+  },
+  {
+   "item": "0x100",
+   "field": "0x398"
+  },
+  {
+   "item": "0x108",
+   "field": "0x380"
+  },
+  {
+   "item": "0x108",
+   "field": "0x388"
+  },
+  {
+   "item": "0x108",
+   "field": "0x390"
+  },
+  {
+   "item": "0x108",
+   "call": "LUT_DFF_LATCH_CLASS6getLut"
+  },
+  {
+   "item": "0x118",
+   "field": "0x370"
+  },
+  {
+   "item": "0x118",
+   "field": "0x378"
+  },
+  {
+   "item": "0x118",
+   "field": "0x380"
+  },
+  {
+   "item": "0x120",
+   "field": "0x370"
+  },
+  {
+   "item": "0x120",
+   "field": "0x378"
+  },
+  {
+   "item": "0x120",
+   "field": "0x380"
+  },
+  {
+   "item": "0x128",
+   "field": "0x370"
+  },
+  {
+   "item": "0x128",
+   "field": "0x378"
+  },
+  {
+   "item": "0x128",
+   "field": "0x380"
+  },
+  {
+   "item": "0x130",
+   "field": "0x370"
+  },
+  {
+   "item": "0x130",
+   "field": "0x378"
+  },
+  {
+   "item": "0x130",
+   "field": "0x380"
+  },
+  {
+   "item": "0x110",
+   "field": "0x370"
+  },
+  {
+   "item": "0x110",
+   "field": "0x378"
+  },
+  {
+   "item": "0x110",
+   "field": "0x380"
+  },
+  {
+   "item": "0x110",
+   "field": "0x388"
+  },
+  {
+   "item": "0x198",
+   "call": "Pwm18dutyCycleUpDownPin"
+  },
+  {
+   "item": "0x198",
+   "call": "Pwm20dutyCycleKeepStopPin"
+  },
+  {
+   "item": "0x198",
+   "call": "Pwm15dutyCycleClkPin"
+  },
+  {
+   "item": "0x198",
+   "call": "Pwm12periodClkPin"
+  },
+  {
+   "item": "0x198",
+   "call": "Pwm12powerDownPin"
+  },
+  {
+   "item": "0x1a0",
+   "field": "0x338"
+  },
+  {
+   "item": "0x1a8",
+   "field": "0x338"
+  },
+  {
+   "item": "0xa8",
+   "field": "0x78"
+  },
+  {
+   "item": "0x138",
+   "field": "0x398"
+  },
+  {
+   "item": "0x150",
+   "field": "0x688"
+  },
+  {
+   "item": "0x158",
+   "field": "0x688"
+  },
+  {
+   "item": "0x168",
+   "field": "0x370"
+  },
+  {
+   "item": "0x140",
+   "field": "0x4a0"
+  },
+  {
+   "item": "0x178",
+   "call": "DifferentialAmplifier7powerUp"
+  }
+ ]
+}

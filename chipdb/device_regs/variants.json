@@ -1,0 +1,8 @@
+{
+  "SLG46824": {
+    "base": "SLG46826",
+    "nvm_bits": 2048,
+    "notes": "Same ChipPart class and register map as SLG46826 (same 2048-bit NVM; register assignment code is shared and unconditional). Differences are at the component-inventory level: SLG46824 lacks the temperature sensor (user-reported) and possibly other resources. Per-variant component lists come from the revision-specific item creation which is NOT yet decompiled - until then, chipdbs generated for SLG46824 use the SLG46826 register tables and the temp sensor (and any other variant-missing macrocells) must not be used by designs.",
+    "missing_features_reported": ["temp_sensor"]
+  }
+}

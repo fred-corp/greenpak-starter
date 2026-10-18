@@ -1,0 +1,15 @@
+# GreenPAK synthesis for a yosys WITH the compiled-in synth_greenpak4
+# (ENABLE_GREENPAK4 build, or Go Configure's bundled external/yosys/v59).
+# For any modern stock yosys use greenpak_synth.ys (script-based compat
+# flow) instead.
+
+read_verilog design.v
+
+hierarchy -check -top top
+proc
+opt
+memory
+opt
+
+# Map to GreenPAK macrocell cells: GP_2LUT / GP_3LUT / GP_4LUT / GP_DFF*
+synth_greenpak4 -json out.json

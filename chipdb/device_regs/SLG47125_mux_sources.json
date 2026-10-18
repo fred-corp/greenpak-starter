@@ -1,0 +1,523 @@
+{
+ "device": "SLG47125",
+ "muxIns": [
+  {
+   "item": "0x60",
+   "field": "0x398"
+  },
+  {
+   "item": "0x68",
+   "field": "0x398"
+  },
+  {
+   "item": "0x70",
+   "field": "0x398"
+  },
+  {
+   "item": "0x78",
+   "field": "0x340"
+  },
+  {
+   "item": "0x80",
+   "call": "LutDffLatchPwmChopper7outQPin"
+  },
+  {
+   "item": "0x88",
+   "call": "LutDffLatchPwmChopper7outQPin"
+  },
+  {
+   "item": "0x90",
+   "call": "LutDffLatchPwmChopper7outQPin"
+  },
+  {
+   "item": "0x98",
+   "call": "LutDffLatchShiftRegister7outQPin"
+  },
+  {
+   "item": "0xa0",
+   "call": "LutDffLatchShiftRegister7outQPin"
+  },
+  {
+   "item": "0xa8",
+   "call": "LutDffLatchShiftRegister7outQPin"
+  },
+  {
+   "item": "0xb0",
+   "call": "LutDffLatchShiftRegister7outQPin"
+  },
+  {
+   "item": "0xb8",
+   "call": "LutDffLatchShiftRegister7outQPin"
+  },
+  {
+   "item": "0xf0",
+   "field": "0x398"
+  },
+  {
+   "item": "0xf0",
+   "field": "0x390"
+  },
+  {
+   "item": "0x110",
+   "field": "0x398"
+  },
+  {
+   "item": "0x110",
+   "field": "0x390"
+  },
+  {
+   "item": "0x130",
+   "field": "0x398"
+  },
+  {
+   "item": "0x130",
+   "field": "0x390"
+  },
+  {
+   "item": "0x150",
+   "field": "0x398"
+  },
+  {
+   "item": "0x150",
+   "field": "0x390"
+  },
+  {
+   "item": "0x288",
+   "field": "0x390"
+  },
+  {
+   "item": "0x1c0",
+   "field": "0x340"
+  },
+  {
+   "item": "0x1c8",
+   "field": "0x340"
+  },
+  {
+   "item": "0x1d0",
+   "field": "0x340"
+  },
+  {
+   "item": "0x1d8",
+   "field": "0x340"
+  },
+  {
+   "item": "0x1e0",
+   "field": "0x340"
+  },
+  {
+   "item": "0x1e8",
+   "field": "0x340"
+  },
+  {
+   "item": "0x1f0",
+   "field": "0x340"
+  },
+  {
+   "item": "0x1f8",
+   "field": "0x340"
+  },
+  {
+   "item": "0x200",
+   "field": "0x340"
+  },
+  {
+   "item": "0x208",
+   "field": "0x340"
+  },
+  {
+   "item": "0x210",
+   "field": "0x340"
+  },
+  {
+   "item": "0x218",
+   "field": "0x340"
+  },
+  {
+   "item": "0x220",
+   "field": "0x340"
+  },
+  {
+   "item": "0x2a8",
+   "call": "Pwm9outPosPin"
+  },
+  {
+   "item": "0x2a8",
+   "call": "Pwm14periodStartPin"
+  },
+  {
+   "item": "0x2a8",
+   "call": "Pwm9outNegPin"
+  },
+  {
+   "item": "0x2b0",
+   "call": "Pwm9outPosPin"
+  },
+  {
+   "item": "0x2b0",
+   "call": "Pwm14periodStartPin"
+  },
+  {
+   "item": "0x2b0",
+   "call": "Pwm9outNegPin"
+  },
+  {
+   "item": "0x2b8",
+   "call": "Pwm9outPosPin"
+  },
+  {
+   "item": "0x2b8",
+   "call": "Pwm14periodStartPin"
+  },
+  {
+   "item": "0x2b8",
+   "call": "Pwm9outNegPin"
+  },
+  {
+   "item": "0x268",
+   "call": "AdcMacrocell4712512dataReadyPin"
+  },
+  {
+   "item": "0x250",
+   "field": "0x698"
+  },
+  {
+   "item": "0xc0",
+   "field": "0x340"
+  }
+ ],
+ "muxOuts": [
+  {
+   "item": "0x60",
+   "field": "0x380"
+  },
+  {
+   "item": "0x60",
+   "field": "0x388"
+  },
+  {
+   "item": "0x68",
+   "field": "0x380"
+  },
+  {
+   "item": "0x68",
+   "field": "0x388"
+  },
+  {
+   "item": "0x70",
+   "field": "0x380"
+  },
+  {
+   "item": "0x70",
+   "field": "0x388"
+  },
+  {
+   "item": "0x78",
+   "field": "0x328"
+  },
+  {
+   "item": "0x78",
+   "field": "0x330"
+  },
+  {
+   "item": "0x80",
+   "call": "LutDffLatchPwmChopper16in0CkBlankingPin"
+  },
+  {
+   "item": "0x80",
+   "call": "LutDffLatchPwmChopper11in1DChopPin"
+  },
+  {
+   "item": "0x80",
+   "call": "LutDffLatchPwmChopper17in2SetResetPwmPin"
+  },
+  {
+   "item": "0x88",
+   "call": "LutDffLatchPwmChopper16in0CkBlankingPin"
+  },
+  {
+   "item": "0x88",
+   "call": "LutDffLatchPwmChopper11in1DChopPin"
+  },
+  {
+   "item": "0x88",
+   "call": "LutDffLatchPwmChopper17in2SetResetPwmPin"
+  },
+  {
+   "item": "0x90",
+   "call": "LutDffLatchPwmChopper16in0CkBlankingPin"
+  },
+  {
+   "item": "0x90",
+   "call": "LutDffLatchPwmChopper11in1DChopPin"
+  },
+  {
+   "item": "0x90",
+   "call": "LutDffLatchPwmChopper17in2SetResetPwmPin"
+  },
+  {
+   "item": "0x98",
+   "call": "LutDffLatchShiftRegister9in0ClkPin"
+  },
+  {
+   "item": "0x98",
+   "call": "LutDffLatchShiftRegister12in1DataInPin"
+  },
+  {
+   "item": "0x98",
+   "call": "LutDffLatchShiftRegister14in2SetResetPin"
+  },
+  {
+   "item": "0xa0",
+   "call": "LutDffLatchShiftRegister9in0ClkPin"
+  },
+  {
+   "item": "0xa0",
+   "call": "LutDffLatchShiftRegister12in1DataInPin"
+  },
+  {
+   "item": "0xa0",
+   "call": "LutDffLatchShiftRegister14in2SetResetPin"
+  },
+  {
+   "item": "0xa8",
+   "call": "LutDffLatchShiftRegister9in0ClkPin"
+  },
+  {
+   "item": "0xa8",
+   "call": "LutDffLatchShiftRegister12in1DataInPin"
+  },
+  {
+   "item": "0xa8",
+   "call": "LutDffLatchShiftRegister14in2SetResetPin"
+  },
+  {
+   "item": "0xb0",
+   "call": "LutDffLatchShiftRegister9in0ClkPin"
+  },
+  {
+   "item": "0xb0",
+   "call": "LutDffLatchShiftRegister12in1DataInPin"
+  },
+  {
+   "item": "0xb0",
+   "call": "LutDffLatchShiftRegister14in2SetResetPin"
+  },
+  {
+   "item": "0xb8",
+   "call": "LutDffLatchShiftRegister9in0ClkPin"
+  },
+  {
+   "item": "0xb8",
+   "call": "LutDffLatchShiftRegister12in1DataInPin"
+  },
+  {
+   "item": "0xb8",
+   "call": "LutDffLatchShiftRegister14in2SetResetPin"
+  },
+  {
+   "item": "0xb8",
+   "call": "LutDffLatchShiftRegister15in3ClkEnablePin"
+  },
+  {
+   "item": "0xf0",
+   "field": "0x370"
+  },
+  {
+   "item": "0xf0",
+   "field": "0x378"
+  },
+  {
+   "item": "0xf0",
+   "field": "0x380"
+  },
+  {
+   "item": "0x110",
+   "field": "0x370"
+  },
+  {
+   "item": "0x110",
+   "field": "0x378"
+  },
+  {
+   "item": "0x110",
+   "field": "0x380"
+  },
+  {
+   "item": "0x130",
+   "field": "0x370"
+  },
+  {
+   "item": "0x130",
+   "field": "0x378"
+  },
+  {
+   "item": "0x130",
+   "field": "0x380"
+  },
+  {
+   "item": "0x150",
+   "field": "0x370"
+  },
+  {
+   "item": "0x150",
+   "field": "0x378"
+  },
+  {
+   "item": "0x150",
+   "field": "0x380"
+  },
+  {
+   "item": "0x1c8",
+   "field": "0x328"
+  },
+  {
+   "item": "0x1c8",
+   "field": "0x338"
+  },
+  {
+   "item": "0x1d0",
+   "field": "0x328"
+  },
+  {
+   "item": "0x1d0",
+   "field": "0x338"
+  },
+  {
+   "item": "0x1d8",
+   "field": "0x328"
+  },
+  {
+   "item": "0x1d8",
+   "field": "0x338"
+  },
+  {
+   "item": "0x1e0",
+   "field": "0x328"
+  },
+  {
+   "item": "0x1e0",
+   "field": "0x338"
+  },
+  {
+   "item": "0x1e8",
+   "field": "0x328"
+  },
+  {
+   "item": "0x1e8",
+   "field": "0x338"
+  },
+  {
+   "item": "0x1f0",
+   "field": "0x338"
+  },
+  {
+   "item": "0x1f8",
+   "field": "0x338"
+  },
+  {
+   "item": "0x200",
+   "field": "0x338"
+  },
+  {
+   "item": "0x208",
+   "field": "0x338"
+  },
+  {
+   "item": "0x210",
+   "field": "0x338"
+  },
+  {
+   "item": "0x218",
+   "field": "0x338"
+  },
+  {
+   "item": "0x220",
+   "field": "0x338"
+  },
+  {
+   "item": "0x288",
+   "field": "0x398"
+  },
+  {
+   "item": "0x2a8",
+   "call": "Pwm18dutyCycleUpDownPin"
+  },
+  {
+   "item": "0x2a8",
+   "call": "Pwm20dutyCycleKeepStopPin"
+  },
+  {
+   "item": "0x2a8",
+   "call": "Pwm15dutyCycleClkPin"
+  },
+  {
+   "item": "0x2a8",
+   "call": "Pwm12periodClkPin"
+  },
+  {
+   "item": "0x2a8",
+   "call": "Pwm12powerDownPin"
+  },
+  {
+   "item": "0x2b0",
+   "call": "Pwm18dutyCycleUpDownPin"
+  },
+  {
+   "item": "0x2b0",
+   "call": "Pwm20dutyCycleKeepStopPin"
+  },
+  {
+   "item": "0x2b0",
+   "call": "Pwm15dutyCycleClkPin"
+  },
+  {
+   "item": "0x2b0",
+   "call": "Pwm12periodClkPin"
+  },
+  {
+   "item": "0x2b0",
+   "call": "Pwm12powerDownPin"
+  },
+  {
+   "item": "0x2b8",
+   "call": "Pwm18dutyCycleUpDownPin"
+  },
+  {
+   "item": "0x2b8",
+   "call": "Pwm20dutyCycleKeepStopPin"
+  },
+  {
+   "item": "0x2b8",
+   "call": "Pwm15dutyCycleClkPin"
+  },
+  {
+   "item": "0x2b8",
+   "call": "Pwm12periodClkPin"
+  },
+  {
+   "item": "0x2b8",
+   "call": "Pwm12powerDownPin"
+  },
+  {
+   "item": "0x268",
+   "call": "AdcMacrocell4712510powerUpPin"
+  },
+  {
+   "item": "0x280",
+   "call": "SpiMacrocell7inCSPin"
+  },
+  {
+   "item": "0x250",
+   "field": "0x688"
+  },
+  {
+   "item": "0x260",
+   "field": "0x370"
+  },
+  {
+   "item": "0x290",
+   "field": "0x4a0"
+  }
+ ]
+}

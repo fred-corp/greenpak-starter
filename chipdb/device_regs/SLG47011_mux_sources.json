@@ -1,0 +1,715 @@
+{
+ "device": "SLG47011",
+ "muxIns": [
+  {
+   "item": "0xd0",
+   "field": "0x398"
+  },
+  {
+   "item": "0xd8",
+   "field": "0x398"
+  },
+  {
+   "item": "0xe0",
+   "field": "0x398"
+  },
+  {
+   "item": "0xe8",
+   "field": "0x398"
+  },
+  {
+   "item": "0xf0",
+   "field": "0x398"
+  },
+  {
+   "item": "0xf8",
+   "call": "LutDffLatchShiftRegister7outQPin"
+  },
+  {
+   "item": "0x100",
+   "call": "LutDffLatchShiftRegister7outQPin"
+  },
+  {
+   "item": "0x108",
+   "call": "LutDffLatchShiftRegister7outQPin"
+  },
+  {
+   "item": "0x110",
+   "call": "LutDffLatchShiftRegister7outQPin"
+  },
+  {
+   "item": "0x118",
+   "field": "0x398"
+  },
+  {
+   "item": "0x160",
+   "field": "0x398"
+  },
+  {
+   "item": "0x160",
+   "field": "0x390"
+  },
+  {
+   "item": "0x180",
+   "field": "0x398"
+  },
+  {
+   "item": "0x180",
+   "field": "0x390"
+  },
+  {
+   "item": "0x1a0",
+   "field": "0x398"
+  },
+  {
+   "item": "0x1a0",
+   "field": "0x390"
+  },
+  {
+   "item": "0x1c0",
+   "field": "0x398"
+  },
+  {
+   "item": "0x1c0",
+   "field": "0x390"
+  },
+  {
+   "item": "0x1e0",
+   "field": "0x398"
+  },
+  {
+   "item": "0x1e0",
+   "field": "0x390"
+  },
+  {
+   "item": "0x200",
+   "field": "0x398"
+  },
+  {
+   "item": "0x200",
+   "field": "0x390"
+  },
+  {
+   "item": "0x220",
+   "field": "0x398"
+  },
+  {
+   "item": "0x220",
+   "field": "0x390"
+  },
+  {
+   "item": "0x240",
+   "field": "0x398"
+  },
+  {
+   "item": "0x240",
+   "field": "0x390"
+  },
+  {
+   "item": "0x260",
+   "field": "0x398"
+  },
+  {
+   "item": "0x260",
+   "field": "0x390"
+  },
+  {
+   "item": "0x358",
+   "call": "Pwm12BitMacrocell14outPositivePin"
+  },
+  {
+   "item": "0x358",
+   "call": "Pwm12BitMacrocell14outNegativePin"
+  },
+  {
+   "item": "0x280",
+   "field": "0x398"
+  },
+  {
+   "item": "0x280",
+   "field": "0x390"
+  },
+  {
+   "item": "0x2a0",
+   "field": "0x398"
+  },
+  {
+   "item": "0x2a0",
+   "field": "0x390"
+  },
+  {
+   "item": "0x2c0",
+   "call": "MemoryControlCounterMacrocell6outPin"
+  },
+  {
+   "item": "0x330",
+   "field": "0x70"
+  },
+  {
+   "item": "0x360",
+   "call": "WidthConverterMacrocell7out0Pin"
+  },
+  {
+   "item": "0x360",
+   "call": "WidthConverterMacrocell7out1Pin"
+  },
+  {
+   "item": "0x360",
+   "call": "WidthConverterMacrocell7out2Pin"
+  },
+  {
+   "item": "0x360",
+   "call": "WidthConverterMacrocell7out3Pin"
+  },
+  {
+   "item": "0x360",
+   "call": "WidthConverterMacrocell7out4Pin"
+  },
+  {
+   "item": "0x360",
+   "call": "WidthConverterMacrocell7out5Pin"
+  },
+  {
+   "item": "0x360",
+   "call": "WidthConverterMacrocell7out6Pin"
+  },
+  {
+   "item": "0x360",
+   "call": "WidthConverterMacrocell7out7Pin"
+  },
+  {
+   "item": "0x360",
+   "call": "WidthConverterMacrocell7out8Pin"
+  },
+  {
+   "item": "0x360",
+   "call": "WidthConverterMacrocell7out9Pin"
+  },
+  {
+   "item": "0x360",
+   "call": "WidthConverterMacrocell8out10Pin"
+  },
+  {
+   "item": "0x360",
+   "call": "WidthConverterMacrocell8out11Pin"
+  },
+  {
+   "item": "0x2f8",
+   "call": "DataBufferMacrocell15getDataReadyPin"
+  },
+  {
+   "item": "0x300",
+   "call": "DataBufferMacrocell15getDataReadyPin"
+  },
+  {
+   "item": "0x308",
+   "call": "DataBufferMacrocell15getDataReadyPin"
+  },
+  {
+   "item": "0x310",
+   "call": "DataBufferMacrocell15getDataReadyPin"
+  },
+  {
+   "item": "0x318",
+   "call": "DataBufferStatusMacrocell17getBufferReadyPin"
+  },
+  {
+   "item": "0x348",
+   "call": "MemoryTableMacrocell12dataReadyPin"
+  },
+  {
+   "item": "0x2d8",
+   "call": "AdcMacrocell12dataReadyPin"
+  },
+  {
+   "item": "0x340",
+   "call": "MathCoreMacrocell15getDataReadyPin"
+  },
+  {
+   "item": "0x328",
+   "field": "0x330"
+  },
+  {
+   "item": "0x10",
+   "field": "0x340"
+  },
+  {
+   "item": "0x18",
+   "field": "0x340"
+  },
+  {
+   "item": "0x20",
+   "field": "0x340"
+  },
+  {
+   "item": "0x28",
+   "field": "0x340"
+  },
+  {
+   "item": "0x30",
+   "field": "0x340"
+  },
+  {
+   "item": "0x38",
+   "field": "0x340"
+  },
+  {
+   "item": "0x40",
+   "field": "0x340"
+  },
+  {
+   "item": "0x48",
+   "field": "0x340"
+  },
+  {
+   "item": "0x50",
+   "field": "0x340"
+  },
+  {
+   "item": "0x58",
+   "field": "0x340"
+  },
+  {
+   "item": "0x60",
+   "field": "0x340"
+  },
+  {
+   "item": "0x68",
+   "field": "0x340"
+  },
+  {
+   "item": "0x70",
+   "field": "0x340"
+  },
+  {
+   "item": "0x370",
+   "field": "0x698"
+  },
+  {
+   "item": "0x378",
+   "field": "0x748"
+  },
+  {
+   "item": "0x2f0",
+   "field": "0x340"
+  }
+ ],
+ "muxOuts": [
+  {
+   "item": "0xd0",
+   "field": "0x380"
+  },
+  {
+   "item": "0xd0",
+   "field": "0x388"
+  },
+  {
+   "item": "0xd8",
+   "field": "0x380"
+  },
+  {
+   "item": "0xd8",
+   "field": "0x388"
+  },
+  {
+   "item": "0xd8",
+   "field": "0x390"
+  },
+  {
+   "item": "0xe0",
+   "field": "0x380"
+  },
+  {
+   "item": "0xe0",
+   "field": "0x388"
+  },
+  {
+   "item": "0xe0",
+   "field": "0x390"
+  },
+  {
+   "item": "0xe8",
+   "field": "0x380"
+  },
+  {
+   "item": "0xe8",
+   "field": "0x388"
+  },
+  {
+   "item": "0xe8",
+   "field": "0x390"
+  },
+  {
+   "item": "0xf0",
+   "field": "0x380"
+  },
+  {
+   "item": "0xf0",
+   "field": "0x388"
+  },
+  {
+   "item": "0xf0",
+   "field": "0x390"
+  },
+  {
+   "item": "0xf8",
+   "call": "LutDffLatchShiftRegister9in0ClkPin"
+  },
+  {
+   "item": "0xf8",
+   "call": "LutDffLatchShiftRegister12in1DataInPin"
+  },
+  {
+   "item": "0xf8",
+   "call": "LutDffLatchShiftRegister14in2SetResetPin"
+  },
+  {
+   "item": "0x100",
+   "call": "LutDffLatchShiftRegister9in0ClkPin"
+  },
+  {
+   "item": "0x100",
+   "call": "LutDffLatchShiftRegister12in1DataInPin"
+  },
+  {
+   "item": "0x100",
+   "call": "LutDffLatchShiftRegister14in2SetResetPin"
+  },
+  {
+   "item": "0x108",
+   "call": "LutDffLatchShiftRegister9in0ClkPin"
+  },
+  {
+   "item": "0x108",
+   "call": "LutDffLatchShiftRegister12in1DataInPin"
+  },
+  {
+   "item": "0x108",
+   "call": "LutDffLatchShiftRegister14in2SetResetPin"
+  },
+  {
+   "item": "0x110",
+   "call": "LutDffLatchShiftRegister9in0ClkPin"
+  },
+  {
+   "item": "0x110",
+   "call": "LutDffLatchShiftRegister12in1DataInPin"
+  },
+  {
+   "item": "0x110",
+   "call": "LutDffLatchShiftRegister14in2SetResetPin"
+  },
+  {
+   "item": "0x118",
+   "field": "0x380"
+  },
+  {
+   "item": "0x118",
+   "field": "0x388"
+  },
+  {
+   "item": "0x118",
+   "field": "0x390"
+  },
+  {
+   "item": "0x118",
+   "call": "LUT_DFF_LATCH_CLASS6getLut"
+  },
+  {
+   "item": "0x160",
+   "field": "0x370"
+  },
+  {
+   "item": "0x160",
+   "field": "0x378"
+  },
+  {
+   "item": "0x160",
+   "field": "0x380"
+  },
+  {
+   "item": "0x180",
+   "field": "0x370"
+  },
+  {
+   "item": "0x180",
+   "field": "0x378"
+  },
+  {
+   "item": "0x180",
+   "field": "0x380"
+  },
+  {
+   "item": "0x1a0",
+   "field": "0x370"
+  },
+  {
+   "item": "0x1a0",
+   "field": "0x378"
+  },
+  {
+   "item": "0x1a0",
+   "field": "0x380"
+  },
+  {
+   "item": "0x1c0",
+   "field": "0x370"
+  },
+  {
+   "item": "0x1c0",
+   "field": "0x378"
+  },
+  {
+   "item": "0x1c0",
+   "field": "0x380"
+  },
+  {
+   "item": "0x1e0",
+   "field": "0x370"
+  },
+  {
+   "item": "0x1e0",
+   "field": "0x378"
+  },
+  {
+   "item": "0x1e0",
+   "field": "0x380"
+  },
+  {
+   "item": "0x200",
+   "field": "0x370"
+  },
+  {
+   "item": "0x200",
+   "field": "0x378"
+  },
+  {
+   "item": "0x200",
+   "field": "0x380"
+  },
+  {
+   "item": "0x220",
+   "field": "0x370"
+  },
+  {
+   "item": "0x220",
+   "field": "0x378"
+  },
+  {
+   "item": "0x220",
+   "field": "0x380"
+  },
+  {
+   "item": "0x240",
+   "field": "0x370"
+  },
+  {
+   "item": "0x240",
+   "field": "0x378"
+  },
+  {
+   "item": "0x240",
+   "field": "0x380"
+  },
+  {
+   "item": "0x240",
+   "field": "0x388"
+  },
+  {
+   "item": "0x260",
+   "field": "0x370"
+  },
+  {
+   "item": "0x260",
+   "field": "0x378"
+  },
+  {
+   "item": "0x260",
+   "field": "0x380"
+  },
+  {
+   "item": "0x280",
+   "field": "0x370"
+  },
+  {
+   "item": "0x280",
+   "field": "0x378"
+  },
+  {
+   "item": "0x280",
+   "field": "0x380"
+  },
+  {
+   "item": "0x280",
+   "field": "0x388"
+  },
+  {
+   "item": "0x2a0",
+   "field": "0x370"
+  },
+  {
+   "item": "0x2a0",
+   "field": "0x378"
+  },
+  {
+   "item": "0x2a0",
+   "field": "0x380"
+  },
+  {
+   "item": "0x2a0",
+   "field": "0x388"
+  },
+  {
+   "item": "0x360",
+   "call": "WidthConverterMacrocell8clkInPin"
+  },
+  {
+   "item": "0x2c0",
+   "call": "MemoryControlCounterMacrocell11setResetPin"
+  },
+  {
+   "item": "0x2c0",
+   "call": "MemoryControlCounterMacrocell9upDownPin"
+  },
+  {
+   "item": "0x2c0",
+   "call": "MemoryControlCounterMacrocell12keepRangePin"
+  },
+  {
+   "item": "0x330",
+   "field": "0x78"
+  },
+  {
+   "item": "0x2d8",
+   "call": "AdcMacrocell18conversionStartPin"
+  },
+  {
+   "item": "0x2d8",
+   "call": "AdcMacrocell19calibrationStartPin"
+  },
+  {
+   "item": "0x2d8",
+   "call": "AdcMacrocell6clkPin"
+  },
+  {
+   "item": "0x340",
+   "call": "MathCoreMacrocell12getCalcEnPin"
+  },
+  {
+   "item": "0x2e0",
+   "call": "PgaMacrocell10powerUpPin"
+  },
+  {
+   "item": "0x2d0",
+   "call": "CurrentSource10powerUpPin"
+  },
+  {
+   "item": "0x2d8",
+   "call": "AdcMacrocell10powerUpPin"
+  },
+  {
+   "item": "0x2f8",
+   "call": "DataBufferMacrocell16getLoadMatrixPin"
+  },
+  {
+   "item": "0x300",
+   "call": "DataBufferMacrocell16getLoadMatrixPin"
+  },
+  {
+   "item": "0x308",
+   "call": "DataBufferMacrocell16getLoadMatrixPin"
+  },
+  {
+   "item": "0x310",
+   "call": "DataBufferMacrocell16getLoadMatrixPin"
+  },
+  {
+   "item": "0x358",
+   "call": "Pwm12BitMacrocell10powerUpPin"
+  },
+  {
+   "item": "0x338",
+   "call": "DacMacrocell10powerUpPin"
+  },
+  {
+   "item": "0x328",
+   "field": "0x338"
+  },
+  {
+   "item": "0x10",
+   "field": "0x338"
+  },
+  {
+   "item": "0x18",
+   "field": "0x338"
+  },
+  {
+   "item": "0x20",
+   "field": "0x328"
+  },
+  {
+   "item": "0x20",
+   "field": "0x338"
+  },
+  {
+   "item": "0x28",
+   "field": "0x328"
+  },
+  {
+   "item": "0x28",
+   "field": "0x338"
+  },
+  {
+   "item": "0x30",
+   "field": "0x328"
+  },
+  {
+   "item": "0x30",
+   "field": "0x338"
+  },
+  {
+   "item": "0x38",
+   "field": "0x328"
+  },
+  {
+   "item": "0x38",
+   "field": "0x338"
+  },
+  {
+   "item": "0x40",
+   "field": "0x328"
+  },
+  {
+   "item": "0x40",
+   "field": "0x338"
+  },
+  {
+   "item": "0x48",
+   "field": "0x328"
+  },
+  {
+   "item": "0x48",
+   "field": "0x338"
+  },
+  {
+   "item": "0x50",
+   "field": "0x328"
+  },
+  {
+   "item": "0x50",
+   "field": "0x338"
+  },
+  {
+   "item": "0x58",
+   "field": "0x328"
+  },
+  {
+   "item": "0x58",
+   "field": "0x338"
+  },
+  {
+   "item": "0x378",
+   "field": "0x688"
+  }
+ ]
+}

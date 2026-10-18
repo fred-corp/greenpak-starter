@@ -1,0 +1,177 @@
+{
+ "device": "SLG47004",
+ "macrocells": [
+  {
+   "slot": "0x700",
+   "truth_regs": [
+    1480,
+    1481,
+    1482,
+    1483
+   ],
+   "lut_out_reg": 1492,
+   "dff_regs": {
+    "set": 1483,
+    "clk": 1481
+   },
+   "other": {},
+   "index": 0
+  },
+  {
+   "slot": "0x708",
+   "truth_regs": [
+    1484,
+    1485,
+    1486,
+    1487
+   ],
+   "lut_out_reg": 1493,
+   "dff_regs": {
+    "set": 1487,
+    "clk": 1485
+   },
+   "other": {},
+   "index": 1
+  },
+  {
+   "slot": "0x710",
+   "truth_regs": [
+    1488,
+    1489,
+    1490,
+    1491
+   ],
+   "lut_out_reg": 1494,
+   "dff_regs": {
+    "set": 1491,
+    "clk": 1489
+   },
+   "other": {},
+   "index": 2
+  },
+  {
+   "slot": "0x718",
+   "truth_regs": [],
+   "lut_out_reg": null,
+   "dff_regs": {},
+   "other": {},
+   "index": 3
+  },
+  {
+   "slot": "0x720",
+   "truth_regs": [],
+   "lut_out_reg": null,
+   "dff_regs": {
+    "set": 1527,
+    "clk": 1525,
+    "reset2": 1524
+   },
+   "other": {},
+   "index": 4
+  },
+  {
+   "slot": "0x728",
+   "truth_regs": [],
+   "lut_out_reg": null,
+   "dff_regs": {
+    "set": 1535,
+    "clk": 1533,
+    "reset2": 1532
+   },
+   "other": {},
+   "index": 5
+  },
+  {
+   "slot": "0x730",
+   "truth_regs": [],
+   "lut_out_reg": null,
+   "dff_regs": {
+    "set": 791,
+    "clk": 789,
+    "reset2": 788
+   },
+   "other": {},
+   "index": 6
+  },
+  {
+   "slot": "0x738",
+   "truth_regs": [],
+   "lut_out_reg": null,
+   "dff_regs": {
+    "clk": 797,
+    "reset2": 796
+   },
+   "other": {},
+   "index": 7
+  },
+  {
+   "slot": "0x740",
+   "truth_regs": [],
+   "lut_out_reg": null,
+   "dff_regs": {
+    "set": 807,
+    "clk": 805,
+    "reset2": 804
+   },
+   "other": {},
+   "index": 8
+  },
+  {
+   "slot": "0x748",
+   "truth_regs": [],
+   "lut_out_reg": null,
+   "dff_regs": {
+    "set": 815,
+    "clk": 813,
+    "reset2": 812
+   },
+   "other": {},
+   "index": 9
+  },
+  {
+   "slot": "0x750",
+   "truth_regs": [],
+   "lut_out_reg": null,
+   "dff_regs": {
+    "set": 823,
+    "clk": 821,
+    "reset2": 820
+   },
+   "other": {},
+   "index": 10
+  },
+  {
+   "slot": "0x7d8",
+   "truth_regs": [],
+   "lut_out_reg": 819,
+   "dff_regs": {},
+   "other": {
+    "pipedelay": {
+     "extra": 859
+    }
+   },
+   "index": 11
+  },
+  {
+   "slot": "0x770",
+   "truth_regs": [
+    848,
+    849,
+    850,
+    851,
+    852,
+    853,
+    854,
+    855
+   ],
+   "lut_out_reg": 854,
+   "dff_regs": {
+    "set": 847,
+    "clk": 845,
+    "reset2": 844
+   },
+   "other": {},
+   "index": 12
+  }
+ ]
+}

@@ -1,0 +1,15 @@
+# Pinout constraints - map HDL ports to package pins.
+# Two line syntaxes are accepted (use either or both):
+#   set_io <port> <BEL>                                (nextpnr style)
+#   set_property PACKAGE_PIN <BEL> [get_ports <port>]  (Vivado XDC style)
+#
+# <port> is a top-level port name or a vector bit (e.g. a[0]).
+# <BEL> is a package pin BEL from the chipdb (GreenPAK: PIN2..PIN20;
+# check chipdb/*.json "bels" with "type": "IOB" for your part).
+#
+# Example for SLG46826V:
+# set_io clk      PIN2
+# set_io a[0]     PIN3
+# set_io a[1]     PIN4
+# set_io y        PIN16
+# set_property PACKAGE_PIN PIN17 [get_ports y2]

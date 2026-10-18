@@ -1,0 +1,8 @@
+tools/nextpnr-src/
+tools/nextpnr/
+tools/yosys/
+__pycache__/
+*.pyc
+flow/design.v
+flow/out.json
+flow/out.v
