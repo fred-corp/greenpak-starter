@@ -411,12 +411,16 @@ struct ForgeFpgaImpl : ViaductAPI
         return bb;
     }
 
-    // Bel buckets: per-macrocell-type buckets, IO pads grouped together.
+    // Bel buckets: all logic LUT macrocells share one bucket (a smaller
+    // LUT function is valid in a wider LUT macrocell - the unused input
+    // stays unconnected = GND), IO pads grouped together.
     IdString getBelBucketForBel(BelId bel) const override
     {
         IdString type = ctx->getBelType(bel);
-        if (type == id_IOB)
+        if (type.in(id_IOB, id_IOB_OUT))
             return id_IOB;
+        if (type.in(id_GP_2LUT, id_GP_3LUT, id_GP_4LUT))
+            return id_GP_LUT;
         return type;
     }
 
@@ -424,6 +428,8 @@ struct ForgeFpgaImpl : ViaductAPI
     {
         if (cell_type.in(id_INBUF, id_OUTBUF, id_IOBUF, id_GP_IBUF, id_GP_OBUF, id_GP_IOBUF))
             return id_IOB;
+        if (cell_type.in(id_GP_2LUT, id_GP_3LUT, id_GP_4LUT))
+            return id_GP_LUT;
         return cell_type;
     }
 
@@ -432,6 +438,13 @@ struct ForgeFpgaImpl : ViaductAPI
         IdString bel_type = ctx->getBelType(bel);
         if (bel_type == id_IOB)
             return cell_type.in(id_INBUF, id_OUTBUF, id_IOBUF, id_GP_IBUF, id_GP_OBUF, id_GP_IOBUF);
+        if (bel_type == id_IOB_OUT)
+            // output-only pad (e.g. GreenPAK GPO pins): no input buffer
+            return cell_type.in(id_OUTBUF, id_GP_OBUF);
+        if (cell_type == id_GP_2LUT)
+            return bel_type.in(id_GP_2LUT, id_GP_3LUT, id_GP_4LUT);
+        if (cell_type == id_GP_3LUT)
+            return bel_type.in(id_GP_3LUT, id_GP_4LUT);
         return bel_type == cell_type;
     }
 

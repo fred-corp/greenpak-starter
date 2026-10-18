@@ -37,12 +37,27 @@ def yosys_reference(path):
     cells = {}
     for cname, c in mod['cells'].items():
         if c['type'].startswith('GP_'):
+            attrs = c.get('attributes', {})
+            params = c.get('parameters', {})
             cells[cname] = {
                 'type': c['type'],
                 'conns': c['connections'],
-                'init': c.get('attributes', {}).get('INIT'),
+                'init': params.get('INIT') or attrs.get('INIT'),
             }
     return ports, cells
+
+
+def parse_init(init, width):
+    """yosys/nextpnr emit truth-table INIT as raw binary digits whose
+    length is the truth-table size; all-digit strings must not be read
+    as decimal."""
+    if init is None:
+        return 0
+    s = str(init)
+    nbits = 1 << width
+    if len(s) == nbits and set(s) <= {'0', '1'}:
+        return int(s, 2)
+    return int(s, 0)
 
 
 def sim_yosys(ports, cells, invals):
@@ -61,7 +76,7 @@ def sim_yosys(ports, cells, invals):
         changed = False
         for c in cells.values():
             t = c['type']
-            if t in ('GP_2LUT', 'GP_3LUT'):
+            if t in ('GP_2LUT', 'GP_3LUT', 'GP_4LUT'):
                 width = int(t[3])
                 idx = 0
                 for k in range(width):
@@ -69,8 +84,7 @@ def sim_yosys(ports, cells, invals):
                     if isinstance(bit, int):
                         idx |= nets.get(bit, 0) << k
                 init = c['init']
-                init = int(init, 0) if isinstance(init, str) else int(init or 0)
-                out = (init >> idx) & 1
+                out = (parse_init(init, width) >> idx) & 1
                 obit = c['conns']['OUT'][0]
                 if nets.get(obit) != out:
                     nets[obit] = out
@@ -128,10 +142,26 @@ def main():
         lo = fields[dstwire][0]
         return sum(bits[lo + b] << b for b in range(6))
 
+    # matrix "input" fields: every field except the IO output/OE wires
+    # (IOPAD*_IN) - their value selects the source wire that drives
+    # the destination
+    mi_fields = {w: f for w, f in fields.items() if not w.startswith('IOPAD')}
+    vdd_wires = [w for w in sources if w.startswith('VCC_NET')]
+
     def eval_image(driven):
         vals = dict(driven)
+        for w in vdd_wires:
+            vals[w] = 1  # VDD source
         for _ in range(20):
             changed = False
+            # matrix connections: each field selects its driving source
+            for w in mi_fields:
+                srcw = inv_sources.get(field_val(w))
+                nv = vals.get(srcw, 0) if srcw is not None else 0
+                if vals.get(w) != nv:
+                    vals[w] = nv
+                    changed = True
+            # LUTs
             for l in luts.values():
                 idx = 0
                 for k, w in enumerate(l['ins']):

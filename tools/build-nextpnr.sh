@@ -18,10 +18,14 @@ SRC="$HERE/tools/nextpnr-src"
 JOBS=$(sysctl -n hw.ncpu 2>/dev/null || nproc 2>/dev/null || echo 8)
 
 if [ -x "$HERE/tools/nextpnr/build/nextpnr-generic" ] && \
-   "$HERE/tools/nextpnr/build/nextpnr-generic" --help 2>&1 | grep -q forgefpga; then
-    echo "nextpnr with forgefpga uarch already built"
+   "$HERE/tools/nextpnr/build/nextpnr-generic" --help 2>&1 | grep -q forgefpga && \
+   [ -f "$SRC/generic/viaduct/forgefpga/forgefpga.cc" ] && \
+   cmp -s "$HERE/uarch/forgefpga/forgefpga.cc" "$SRC/generic/viaduct/forgefpga/forgefpga.cc" && \
+   cmp -s "$HERE/uarch/forgefpga/constids.inc" "$SRC/generic/viaduct/forgefpga/constids.inc"; then
+    echo "nextpnr with forgefpga uarch already built (uarch sources current)"
     exit 0
 fi
+echo "==> uarch sources changed or not yet built: (re)building"
 
 if [ ! -d "$SRC" ]; then
     echo "==> cloning nextpnr"

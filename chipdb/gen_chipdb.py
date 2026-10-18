@@ -161,11 +161,57 @@ def greenpak_pin_names(part):
     return GREENPAK_PINOUTS.get(base)
 
 
+def greenpak_pad_caps(part):
+    """Per-pad matrix connectivity from the datasheet tables:
+      'io'   - matrix input + output (normal GPIO)
+      'out'  - output only (e.g. IO6/IO7 GPOs)
+      'in'   - input only
+      'none' - not connectable to the matrix at all (e.g. SCL/SDA,
+               which route only to the I2C block)
+    Falls back to 'io' for every pad when the tables are missing."""
+    base = re.sub(r'[A-Za-z]+$', '', part)
+    vp = os.path.join(os.path.dirname(__file__), 'device_regs', 'variants.json')
+    if os.path.exists(vp):
+        with open(vp) as f:
+            variants = json.load(f)
+        base = variants.get(base, {}).get('base', base)
+    dr = os.path.join(os.path.dirname(__file__), 'device_regs')
+
+    def load(name):
+        p = os.path.join(dr, name)
+        return json.load(open(p)) if os.path.exists(p) else None
+
+    pins, inputs, outputs = (load(base + '_pins.json'),
+                             load(base + '_matrix_inputs.json'),
+                             load(base + '_matrix_outputs.json'))
+    if not (pins and inputs and outputs):
+        return {}
+    pkg = next(iter(pins['packages'].values()))
+    in_names = {s['name'] for s in inputs['sources']}
+    out_funcs = {o['function'] for o in outputs['outputs']}
+    caps = {}
+    for pin, func in pkg.items():
+        if not func.startswith('IO'):
+            caps['PIN%s' % pin] = 'none'   # SCL/SDA/GND/VDD
+            continue
+        has_in = ('%s Digital Input' % func) in in_names
+        has_out = ('%s Digital Output' % func) in out_funcs
+        caps['PIN%s' % pin] = ('io' if has_in and has_out
+                               else 'out' if has_out
+                               else 'in' if has_in else 'none')
+    return caps
+
+
 # Datasheet-confirmed device inventory (SLG46826 DS rev 3.18): logic
 # macrocells outside the multifunction blocks. LUT2_3 doubles as PGEN,
 # LUT3_6 as Pipe Delay/Ripple Counter (both usable as plain LUTs).
 GREENPAK_INVENTORY = {
-    'SLG46826': {'n2': 4, 'n3': 7, 'n4': 0, 'ndff': 0},
+    # 4x LUT2 (LUT2_3 doubles as PGEN) + 7x LUT3 (LUT3_6 doubles as
+    # Pipe Delay/Ripple Counter) + the 8 multifunction-block LUTs
+    # (LUT3_7..13 in MULTFUNC_8BIT_1..7, LUT4_0 in MULTFUNC_16BIT_0).
+    # MF LUT mode select is 00000 = all-zero default, so no mode bits
+    # are needed to use them as LUTs.
+    'SLG46826': {'n2': 4, 'n3': 14, 'n4': 1, 'ndff': 0},
 }
 
 # Datasheet-confirmed LUT truth-table bit ranges (Table 59 / sections
@@ -174,11 +220,21 @@ GREENPAK_INVENTORY = {
 # LUT3_0 slot (it grabs the adjacent 16-bit PGen counter-data range
 # 1168-1183 instead of the truth range 1184-1191). Validated bit-exact
 # against a real Go Configure design (see analysis/simulate_nvm.py).
+# MF-block LUT ranges are datasheet-derived but NOT yet ground-truth
+# validated (the reference design does not use MF LUTs).
 DATASHEET_TRUTH = {
     'SLG46826': {
         'LUT2': [[1152 + 4 * i + k for k in range(4)] for i in range(4)],
         'LUT3': [[1184 + 8 * i + k for k in range(8)] for i in range(6)]
-                + [[1248 + k for k in range(8)]],
+                + [[1248 + k for k in range(8)]]      # LUT3_6 (pipe dly)
+                + [[1344 + k for k in range(8)]]      # LUT3_7 (MF 8BIT_1)
+                + [[1376 + k for k in range(8)]]      # LUT3_8 (MF 8BIT_2)
+                + [[1416 + k for k in range(8)]]      # LUT3_9 (MF 8BIT_3)
+                + [[1448 + k for k in range(8)]]      # LUT3_10 (MF 8BIT_4)
+                + [[1488 + k for k in range(8)]]      # LUT3_11 (MF 8BIT_5)
+                + [[1520 + k for k in range(8)]]      # LUT3_12 (MF 8BIT_6)
+                + [[1560 + k for k in range(8)]],     # LUT3_13 (MF 8BIT_7)
+        'LUT4': [[1288 + k for k in range(16)]],       # LUT4_0 (MF 16BIT_0)
     },
 }
 
@@ -267,25 +323,33 @@ def greenpak_scaffold(part="SLG46826V", nvm_path=None, n2=16, n3=16, n4=8, ndff=
 
     # IO pads: GP_IBUF (IN->OUT), GP_OBUF (IN->OUT), GP_IOBUF (IN/OE/OUT/IO)
     pin_names = greenpak_pin_names(part) or ["IO_%d" % i for i in range(20)]
+    pad_caps = greenpak_pad_caps(part)
     for p, bel_name in enumerate(pin_names):
+        cap = pad_caps.get(bel_name)
+        if cap == 'none':
+            continue  # not connectable to the matrix (e.g. SCL/SDA)
+        has_in = cap != 'out'    # 'io' (default when unknown) or 'in'
+        has_out = cap != 'in'
         io_w = "IOPAD%d" % p
         in_w = "IOPAD%d_IN" % p   # fabric -> pad (drives GP_OBUF.IN)
         out_w = "IOPAD%d_OUT" % p  # pad -> fabric (from GP_IBUF.OUT)
         for w in (io_w, in_w, out_w):
             wires.append({"name": w, "type": "IO", "x": 2, "y": p})
-        bels.append({"name": bel_name, "type": "IOB", "x": 2, "y": p, "z": 0,
-                     "pin": bel_name,
+        bels.append({"name": bel_name, "type": "IOB" if has_in else "IOB_OUT",
+                     "x": 2, "y": p, "z": 0, "pin": bel_name,
                      "ports": {"IO": {"dir": "inout", "wire": io_w},
                                "IN": {"dir": "inout", "wire": in_w},
                                "OUT": {"dir": "inout", "wire": out_w}}})
         # GP_IBUF output feeds the matrix
-        for dst in inputs:
-            pips.append({"name": "%s.%s" % (out_w, dst), "src": out_w, "dst": dst,
-                         "x": 0, "y": 0, "delay": 0.1})
+        if has_in:
+            for dst in inputs:
+                pips.append({"name": "%s.%s" % (out_w, dst), "src": out_w, "dst": dst,
+                             "x": 0, "y": 0, "delay": 0.1})
         # matrix drives GP_OBUF input
-        for src in outputs:
-            pips.append({"name": "%s.%s" % (src, in_w), "src": src, "dst": in_w,
-                         "x": 0, "y": 0, "delay": 0.1})
+        if has_out:
+            for src in outputs:
+                pips.append({"name": "%s.%s" % (src, in_w), "src": src, "dst": in_w,
+                             "x": 0, "y": 0, "delay": 0.1})
 
     chipdb = {
         "device": part,
@@ -346,6 +410,16 @@ def matrix_join(part, bels, device_regs):
                 # the single Table 21 source named LUT<w>_<i>_...
                 cands = {v for n, v in by_name.items()
                          if n.startswith('LUT%s_%s_' % (m.group(1), m.group(2)))}
+                if not cands and m.group(1) == '3' and int(m.group(2)) >= 7:
+                    # multifunction-block LUT3_7..13: the matrix source
+                    # is named after the block, not the LUT
+                    n = 'MULTFUNC_8BIT_%d: LUT_DFF_OUT' % (int(m.group(2)) - 6)
+                    if n in by_name:
+                        cands = {by_name[n]}
+                if not cands and m.group(1) == '4':
+                    n = 'MULTFUNC_16BIT_0: LUT_DFF_OUT'
+                    if n in by_name:
+                        cands = {by_name[n]}
                 if len(cands) == 1:
                     sources[w] = next(iter(cands))
             elif re.match(r'^(VCC|GND)_NET\d+$', w):

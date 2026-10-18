@@ -94,6 +94,21 @@ def cell_truth(cell):
     return init
 
 
+def parse_init(init, width):
+    """Parse a LUT INIT value from the nextpnr report. yosys emits
+    truth-table INIT as a raw binary digit string ("10110010") whose
+    length is the truth-table size; int(s, 0) would mis-read that as
+    decimal, so parse as binary when the digits and length match the
+    cell's truth-table width."""
+    if init is None:
+        return 0
+    s = str(init)
+    nbits = 1 << width
+    if len(s) == nbits and set(s) <= {'0', '1'}:
+        return int(s, 2)
+    return int(s, 0)
+
+
 def assemble(chipdb, routed, chipdb_path=''):
     bits = load_default(chipdb, chipdb_path)
     nvm = chipdb.get('nvm', {})
@@ -134,11 +149,8 @@ def assemble(chipdb, routed, chipdb_path=''):
         stats['cells'] += 1
         init = cell.get('params', {}).get('INIT')
         if init is not None and 'truth_table_bits' in entry:
-            init = str(init)
-            try:
-                init = int(init, 0)
-            except ValueError:
-                init = int(init, 2)  # raw binary digits (e.g. "0001")
+            width = {'GP_2LUT': 2, 'GP_3LUT': 3, 'GP_4LUT': 4}.get(cell['type'], 4)
+            init = parse_init(init, width)
             for i, idx in enumerate(entry['truth_table_bits']):
                 if (init >> i) & 1:
                     setbit(idx)
