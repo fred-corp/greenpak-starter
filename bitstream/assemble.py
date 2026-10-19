@@ -119,6 +119,13 @@ def assemble(chipdb, routed, chipdb_path=''):
     msrc = matrix.get('sources', {})
     io_oe = matrix.get('io_oe', {})
     pin_modes = matrix.get('pin_modes', {})
+    # fabric->pad wire -> pad BEL name (for the static-OE register lookup)
+    wire_pad = {}
+    for b in chipdb.get('bels', []):
+        if b.get('type') in ('IOB', 'IOB_OUT'):
+            w = b.get('ports', {}).get('IN', {}).get('wire')
+            if w:
+                wire_pad[w] = b['name']
     stats = {'cells': 0, 'pips': 0, 'bits_set': 0,
              'connections': 0, 'unmapped_pips': 0, 'io_outputs': 0}
     written_fields = set()   # matrix fields written by routed pips
@@ -209,15 +216,31 @@ def assemble(chipdb, routed, chipdb_path=''):
                         clearbit(lo + b)
                 stats['pips'] += 1
                 stats['connections'] += 1
-                if dst in io_oe:
-                    # driving a pad: enable its output (OE = VDD, the
-                    # matrix source 63 - GP_OBUF has no OE port)
-                    oe_lo = io_oe[dst][0]
-                    for b in range(6):
-                        if (63 >> b) & 1:
-                            setbit(oe_lo + b)
-                        else:
-                            clearbit(oe_lo + b)
+                if dst in wire_pad:
+                    # Driving a pad: enable its output. Ground truth
+                    # (Go Configure-compiled designs): pads WITH a
+                    # static output-enable register use it (bit = 1)
+                    # and leave the matrix OE field at default; pads
+                    # WITHOUT one (e.g. IO5/IO9/IO10...) set the matrix
+                    # "Digital Output OE" field to VDD (source 63).
+                    # IO6/IO7 have a static register but NO matrix OE
+                    # field at all - checking wire_pad (any pad), not
+                    # io_oe membership, is what enables them.
+                    pad = wire_pad[dst]
+                    pm = pin_modes.get(pad, {})
+                    if 'out_en' in pm:
+                        setbit(pm['out_en'])
+                    elif dst in io_oe:
+                        oe_lo = io_oe[dst][0]
+                        for b in range(6):
+                            if (63 >> b) & 1:
+                                setbit(oe_lo + b)
+                            else:
+                                clearbit(oe_lo + b)
+                    else:
+                        print('  warn: pad %s has no output-enable '
+                              'mechanism in the chipdb' % pad,
+                              file=sys.stderr)
                     stats['io_outputs'] += 1
             else:
                 stats['unmapped_pips'] += 1

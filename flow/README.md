@@ -127,20 +127,33 @@ Current limitations (honest status):
 - Sequential logic is encoded and round-trip verified (examples/
   counter.v with GP_DFF, examples/counter_rst.v with GP_DFFSR async
   reset: DFF mode selects, control bits, initial polarity, unused
-  resets tied to VDD), but not yet ground-truth validated against a
-  Go Configure design that uses DFFs - a .gp6 with counters/flip-
-  flops would close that gap like DM8200_migrate.gp6 did for
-  combinational logic.
-- MF-block LUT truth ranges and sources are datasheet-derived but NOT
-  ground-truth validated (the reference .gp6 design does not use MF
-  LUTs); a Go Configure design using MF LUTs would close that gap.
+  resets tied to VDD). The MF-block DFF mode is GROUND-TRUTH
+  VALIDATED (SLG46826-MF-DFF-test.gp6): the "Single DFF" mode bit is
+  exactly the app's 0x358 register (1339 for 8BIT_1 etc.), the DFF
+  port mapping is CLK=IN0 / nSET-nRST=IN1 / D=IN2, and the control
+  bits are [7:4] of the block's LUT truth byte - all as modeled.
+  The main-macrocell DFF registers remain datasheet-derived.
+- MF-block LUTs are GROUND-TRUTH VALIDATED (SLG46826-MF-DFF-test.gp6):
+  the 16BIT_0 block's 4-bit LUT truth decodes at bits 1288-1303 and
+  its inputs are matrix outputs OUT30-33. New knowledge: the block
+  mode value (LSB-first over registers 1280,1281,1283,1284,1282,
+  1285,1286) is 3 for "LUT -> CNT/DLY" (LUT feeding the counter);
+  "Single 4-bit LUT" = 0, "Single DFF" = 16, "Single CNT/DLY" = 1.
+- The MF counter/CNT-DLY macrocell (mode, clock source, counter
+  data) is DECODED (analysis/simulate_nvm.py prints it) but not
+  synthesizable from HDL yet.
 - IO pin modes: the per-pin registers are extracted (device_regs/
   SLG46826_pinmodes.json) and output pads get their pull resistors
-  cleared to floating - exactly what the ground-truth design does.
-  Everything else uses the default-NVM settings (digital input,
-  push-pull 1x; the matrix OE field enables the driver). Explicit
-  pin-mode configuration (Schmitt, low-voltage, open-drain, pull
-  strength) is not exposed to designs yet.
+  cleared to floating - exactly what the ground-truth designs do.
+  Output enables follow the ground truth per pad class: pads WITH a
+  static output-enable register (IO0/IO2/IO3/IO6/IO7) set that
+  register and leave the matrix OE field at default; pads WITHOUT
+  one (IO1/IO4/IO5/IO8-IO14) set the matrix "Digital Output OE"
+  field to VDD. IO6/IO7 have a static register but NO matrix OE
+  field at all. Everything else uses default-NVM settings (digital
+  input, push-pull 1x). Explicit pin-mode configuration (Schmitt,
+  low-voltage, open-drain, pull strength) is not exposed to designs
+  yet.
 - DFF cell variants not exercised by a test design: nQ outputs
   (*I cells), latches (GP_DLATCH*). GP_DFFSR is exercised by
   counter_rst and assembled as nRST (rst_set bit = 0).
