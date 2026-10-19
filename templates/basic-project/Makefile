@@ -61,31 +61,67 @@ yosys-check:
 	@command -v $(YOSYS_BIN) > /dev/null || { echo "ERROR: yosys not found"; exit 1; }
 
 # ---- synthesis ---------------------------------------------------------
-# HDL: verilog (default) or vhdl (requires ghdl). For Verilog, list your
-# sources in VSRC (top module must be named $(TOP)).
+# HDL: verilog (default) or vhdl (make HDL=vhdl). Verilog sources: VSRC;
+# VHDL sources: src/*.vhd (top entity named $(TOP)).
 HDL   ?= verilog
 VSRC  = src/top.v
-VHDSRC = src/*.vhd
+VHDSRC = $(wildcard src/*.vhd)
+
+# Yosys used for VHDL must have the ghdl plugin (oss-cad-suite ships it
+# as share/yosys/plugins/ghdl.so); standalone 'ghdl --synth' cannot emit
+# a yosys netlist. The plugin's compiled-in library prefix does not
+# match the oss-cad-suite layout, so point it at the ghdl installation's
+# std/ieee libraries (override GHDL_PREFIX_DIR if yours lives elsewhere).
+GHDL_PREFIX_DIR ?= $(patsubst %/libexec/,%/lib/ghdl,$(patsubst %/bin/,%/lib/ghdl,$(dir $(realpath $(shell command -v ghdl 2>/dev/null)))))
+GHDL_PREFIX_ENV = $(if $(wildcard $(GHDL_PREFIX_DIR)/ieee),GHDL_PREFIX=$(GHDL_PREFIX_DIR),)
 
 ifeq ($(HDL),vhdl)
+ifeq ($(FAMILY),greenpak)
 $(TOP)_synth.json: $(VHDSRC)
-	ghdl -a $(VHDSRC)
-	ghdl --synth --std=08 $(TOP) -o $@
+	sed -e 's|^read_verilog -lib greenpak4/cells_sim.v|ghdl --std=08 $(VHDSRC) -e $(TOP)|' \
+	    -e '/^read_verilog design.v/d' \
+	    -e 's|greenpak4/|$(FLOW)/greenpak4/|g' \
+	    -e 's|write_json out.json|write_json $@|' \
+	    $(FLOW)/$(GYS) > synth_gp4.ys
+	$(GHDL_PREFIX_ENV) $(YOSYS_BIN) -m ghdl -s synth_gp4.ys > $(TOP)_vhdl.log 2>&1 \
+	  || { rc=$$?; tail -15 $(TOP)_vhdl.log; \
+	       grep -q "netlists.adb\|vhdl import failed\|unhandled signal\|foreign exception" $(TOP)_vhdl.log && { \
+	         echo; \
+	         echo "The ghdl yosys plugin failed. With oss-cad-suite this usually means"; \
+	         echo "mixed component dates (a stale lib/libghdl* next to a newer bin/):"; \
+	         echo "  ls -la $$(dirname $$(command -v yosys))/../lib/libghdl*"; \
+	         echo "Fix: re-extract a FRESH oss-cad-suite tarball over the old directory."; \
+	       }; rm -f $@; exit $$rc; }
 else
-$(TOP)_synth.json: $(VSRC)
-	cat $(VSRC) > design.v
+$(TOP)_synth.json: $(VHDSRC)
+	cp $(FLOW)/forgefpga_prims.v $(FLOW)/forgefpga_map.v .
+	$(GHDL_PREFIX_ENV) $(YOSYS_BIN) -m ghdl -p "read_verilog -lib forgefpga_prims.v; \
+	  ghdl --std=08 $(VHDSRC) -e $(TOP); hierarchy -check -top $(TOP); proc; flatten; \
+	  tribuf -logic; deminout; synth -run coarse; memory_map; opt -full; \
+	  iopadmap -bits -inpad INBUF O:PAD -outpad OUTBUF I:PAD; \
+	  techmap -map +/techmap.v; opt -fast; dfflegalize -cell \\$$_DFF_P_ 0; \
+	  abc -lut 4 -dress; clean; techmap -map forgefpga_map.v; clean; \
+	  hierarchy -check; write_json $@" > $(TOP)_vhdl.log 2>&1 \
+	  || { rc=$$?; tail -15 $(TOP)_vhdl.log; rm -f $@; exit $$rc; }
+endif
+else
+design.v: $(VSRC)
+	cat $(VSRC) > $@
+
 ifeq ($(FAMILY),greenpak)
 # works with ANY modern yosys (oss-cad-suite, Homebrew, master) - the
 # greenpak4 techlib is vendored in flow/greenpak4/ and the pass sequence
 # replicates yosys v0.59's synth_greenpak4 (removed from master)
+$(TOP)_synth.json: design.v
 	sed -e 's|-top top|-top $(TOP)|' \
 	    -e 's|greenpak4/|$(FLOW)/greenpak4/|g' \
 	    -e 's|write_json out.json|write_json $@|' \
 	    $(FLOW)/$(GYS) > synth_gp4.ys
 	$(YOSYS_BIN) -s synth_gp4.ys
 else
+$(TOP)_synth.json: design.v
 	cp $(FLOW)/forgefpga_prims.v $(FLOW)/forgefpga_map.v .
-	$(YOSYS_BIN) -p "read_verilog -lib forgefpga_prims.v; read_verilog $(VSRC); \
+	$(YOSYS_BIN) -p "read_verilog -lib forgefpga_prims.v; read_verilog design.v; \
 	  hierarchy -check -top $(TOP); proc; flatten; tribuf -logic; deminout; \
 	  synth -run coarse; memory_map; opt -full; \
 	  iopadmap -bits -inpad INBUF O:PAD -outpad OUTBUF I:PAD; \
@@ -94,6 +130,19 @@ else
 	  hierarchy -check; write_json $@"
 endif
 endif
+
+# ---- VHDL style lint (vsg; informational, does not gate the build) ------
+# Mirrors the TerosHDL/VSCode vsg linting; 'vsg --fix' applies fixes.
+.PHONY: lint
+lint:
+	@if ! command -v vsg > /dev/null; then \
+	  echo "vsg not found (pip3 install vsg)"; exit 1; \
+	elif [ -n "$(VHDSRC)" ]; then \
+	  vsg -f $(VHDSRC) || \
+	    echo "note: style violations do not affect synthesis; fixes: vsg -f $(VHDSRC) --fix"; \
+	else \
+	  echo "no VHDL sources in src/*.vhd"; \
+	fi
 
 # ---- place & route -----------------------------------------------------
 PCFOPT = $(if $(wildcard $(PCF)),--vopt pcf=$(PCF),)

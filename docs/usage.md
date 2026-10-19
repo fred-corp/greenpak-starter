@@ -47,14 +47,31 @@ before importing it.
 
 ## Quickstart (VHDL)
 
-VHDL needs GHDL with the yosys plugin (ghdl-yosys-plugin); yosys alone
-cannot read VHDL:
+VHDL goes through the ghdl yosys plugin (`yosys -m ghdl`); yosys alone
+cannot read VHDL, and standalone `ghdl --synth` only writes a VHDL
+netlist - it cannot produce a yosys JSON.
 
-    brew install ghdl            # or: port install ghdl
-    # verify plugin: ghdl --version must list the yosys plugin,
-    # or use "ghdl --synth <top> -o out.v" and synthesize the
-    # resulting Verilog through the standard flow
-    make TOP=top PART=SLG46826V
+    make TOP=top PART=SLG46826V HDL=vhdl
+
+Requirements:
+
+- a yosys with the ghdl plugin. oss-cad-suite ships it
+  (`share/yosys/plugins/ghdl.so`); with a custom yosys, build
+  ghdlsynth against your GHDL.
+- for oss-cad-suite, the plugin needs `GHDL_PREFIX` pointing at the
+  suite's std/ieee libraries (the template Makefile sets this
+  automatically from `ghdl`'s location; override with
+  `GHDL_PREFIX_DIR=...`).
+- IMPORTANT: the plugin and lib/libghdl must come from the SAME
+  oss-cad-suite tarball. If the plugin crashes with an Ada assertion
+  (`netlists.adb` / `unhandled signal`), your suite has mixed
+  component dates - re-extract a fresh tarball over the old directory.
+
+Style linting (the same vsg tool TerosHDL uses in VSCode,
+informational - style does not gate the build):
+
+    make lint                    # vsg report on src/*.vhd
+    vsg -f src/top.vhd --fix     # apply fixes
 
 ## Choosing a part
 
