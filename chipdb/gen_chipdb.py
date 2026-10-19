@@ -269,6 +269,62 @@ DATASHEET_PGEN = {
     'SLG46826': {'LUT2_3': {'mode': 1235, 'size': 1164, 'data': 1168}},
 }
 
+# MF-block CNT/DLY counters (datasheet Table 59 + section 8 block
+# diagrams; the MF-DFF-test.gp6 ground truth covers CNT0's defaults).
+# Per block: mode_bits = the block-mode value bits 0..3 (LSB first,
+# from the decompiled 0x340 field order; bit 4 = the DFF bit, kept in
+# DATASHEET_DFF); cnt_regs = the 4-bit "function and edge mode" field
+# LSB ([1:0] = DLY/oneshot/freqdet/CNT, [3:2] = edge), clock source
+# (4 bits; 1110 = External via Matrix B, 0010 = 2M OSC1 = the app's
+# ground-truth default), initial value (2 bits), output polarity,
+# 8-bit counter data. out_src = the block's DLY_CNT_OUT Matrix Input
+# Number. Block mode values: 1 = counter only, 3 = LUT -> counter,
+# 7 = DFF -> counter (16 for DFF alone, 0 for LUT alone).
+DATASHEET_CNT = {
+    'SLG46826': {
+        'CNT0': {'lut_bel': 'LUT4_0', 'mode_bits': [1280, 1281, 1283, 1284],
+                 'cnt_regs': {'mode': 1304, 'clock': 1308, 'init': 1313,
+                              'pol': 1312, 'data': 1320},
+                 'ext_clk_wire': 'MI_L4_0_2', 'dly_in_wire': 'MI_L4_0_3',
+                 'out_src': 47},
+        'CNT1': {'lut_bel': 'LUT3_7', 'mode_bits': [1337, 1338, 1340, 1341],
+                 'cnt_regs': {'mode': 1356, 'clock': 1352, 'init': 1342,
+                              'pol': 1368, 'data': 1360},
+                 'ext_clk_wire': 'MI_L3_7_1', 'dly_in_wire': 'MI_L3_7_2',
+                 'out_src': 29},
+        'CNT2': {'lut_bel': 'LUT3_8', 'mode_bits': [1372, 1373, 1374, 1375],
+                 'cnt_regs': {'mode': 1388, 'clock': 1384, 'init': 1392,
+                              'pol': 1395, 'data': 1400},
+                 'ext_clk_wire': 'MI_L3_8_1', 'dly_in_wire': 'MI_L3_8_2',
+                 'out_src': 33},
+        'CNT3': {'lut_bel': 'LUT3_9', 'mode_bits': [1409, 1410, 1412, 1413],
+                 'cnt_regs': {'mode': 1428, 'clock': 1424, 'init': 1414,
+                              'pol': 1440, 'data': 1432},
+                 'ext_clk_wire': 'MI_L3_9_1', 'dly_in_wire': 'MI_L3_9_2',
+                 'out_src': 34},
+        'CNT4': {'lut_bel': 'LUT3_10', 'mode_bits': [1444, 1445, 1446, 1447],
+                 'cnt_regs': {'mode': 1460, 'clock': 1456, 'init': 1464,
+                              'pol': 1467, 'data': 1472},
+                 'ext_clk_wire': 'MI_L3_10_1', 'dly_in_wire': 'MI_L3_10_2',
+                 'out_src': 35},
+        'CNT5': {'lut_bel': 'LUT3_11', 'mode_bits': [1481, 1482, 1484, 1485],
+                 'cnt_regs': {'mode': 1500, 'clock': 1496, 'init': 1486,
+                              'pol': 1512, 'data': 1504},
+                 'ext_clk_wire': 'MI_L3_11_1', 'dly_in_wire': 'MI_L3_11_2',
+                 'out_src': 36},
+        'CNT6': {'lut_bel': 'LUT3_12', 'mode_bits': [1516, 1517, 1518, 1519],
+                 'cnt_regs': {'mode': 1532, 'clock': 1528, 'init': 1536,
+                              'pol': 1539, 'data': 1544},
+                 'ext_clk_wire': 'MI_L3_12_1', 'dly_in_wire': 'MI_L3_12_2',
+                 'out_src': 37},
+        'CNT7': {'lut_bel': 'LUT3_13', 'mode_bits': [1552, 1553, 1554, 1555],
+                 'cnt_regs': {'mode': 1572, 'clock': 1568, 'init': 1576,
+                              'pol': 1557, 'data': 1584},
+                 'ext_clk_wire': 'MI_L3_13_1', 'dly_in_wire': 'MI_L3_13_2',
+                 'out_src': 38},
+    },
+}
+
 DATASHEET_DFF = {
     'SLG46826': {
         'LUT2_0': {'mode': 1232, 'latch': 1155, 'out_sel': 1154, 'init': 1153},
@@ -307,7 +363,22 @@ DATASHEET_DFF = {
 
 def greenpak_dff_ports(belname):
     """DFF-mode port wiring for a LUT macrocell BEL: port name ->
-    (fabric wire, direction). Returns {} when the slot has no DFF."""
+    (fabric wire, direction). Returns {} when the slot has no DFF.
+
+    Alias ports: 'nQ' (the *I cell variants output the inverted Q -
+    the hardware "Output Select Q/nQ" bit) shares the Q wire, and
+    'nCLK' (the GP_DLATCH* cells' active-low latch enable) shares the
+    CLK wire. Only the port the bound cell uses is connected to a net.
+    """
+    base = _greenpak_dff_base_ports(belname)
+    if 'Q' in base:
+        base['nQ'] = (base['Q'][0], 'out')
+    if 'CLK' in base:
+        base['nCLK'] = (base['CLK'][0], 'in')
+    return base
+
+
+def _greenpak_dff_base_ports(belname):
     m2 = re.match(r'^LUT2_(\d)$', belname)
     m3 = re.match(r'^LUT3_(\d+)$', belname)
     m4 = re.match(r'^LUT4_(\d)$', belname)
@@ -431,6 +502,22 @@ def greenpak_scaffold(part="SLG46826V", nvm_path=None, n2=16, n3=16, n4=8, ndff=
             bel['ports']['CLK'] = {'dir': 'in', 'wire': 'MI_L2_3_0'}
             bel['ports']['nRST'] = {'dir': 'in', 'wire': 'MI_L2_3_1'}
 
+    # MF-block CNT/DLY counters: one BEL per block, sharing the block's
+    # matrix input wires with the LUT/DFF (in "Single CNT/DLY" mode the
+    # counter takes Matrix A = DLY_IN/CNT reset and Matrix B = EXT_CLK;
+    # the block-mode value combines counter + LUT/DFF usage). The
+    # counter output is its own matrix source - a dedicated wire.
+    cnt_table = DATASHEET_CNT.get(greenpak_base(part), {})
+    for name, ct in cnt_table.items():
+        out_w = 'MF_%s_OUT' % name
+        wires.append({'name': out_w, 'type': 'MATRIX', 'x': 0, 'y': 0})
+        matrix.append(out_w)
+        bels.append({'name': name, 'type': 'GP_COUNT8_ADV', 'x': 0, 'y': 0,
+                     'z': 200 + int(name[-1]),
+                     'ports': {'CLK': {'dir': 'in', 'wire': ct['ext_clk_wire']},
+                               'RST': {'dir': 'in', 'wire': ct['dly_in_wire']},
+                               'OUT': {'dir': 'out', 'wire': out_w}}})
+
     # Switch matrix crossbar (real crosspoint set pending extraction).
     # matrix sources: macrocell outputs AND the constant nets - in
     # hardware GND/VDD are matrix sources (Table 21 values 0/63)
@@ -520,6 +607,8 @@ def matrix_join(part, bels, device_regs):
         return None
 
     by_name = {s['name']: s['value'] for s in inputs['sources']}
+    cnt_src = {k: ct['out_src'] for k, ct in
+               DATASHEET_CNT.get(base, {}).items()}
     fields = {wire: [6 * out, 6 * out + 5]
               for wire, out in outputs['wire_map'].items()}
     # IO output path: "IOx Digital Output" is itself a matrix output
@@ -550,6 +639,13 @@ def matrix_join(part, bels, device_regs):
                         cands = {by_name[n]}
                 if len(cands) == 1:
                     sources[w] = next(iter(cands))
+            elif re.match(r'^MF_CNT\d+_OUT$', w):
+                # MF-block counter output: its matrix source value comes
+                # from the datasheet counter table (Table 21 DLY_CNT_OUT)
+                m = re.match(r'^MF_(CNT\d)_OUT$', w)
+                ct = cnt_src.get(m.group(1))
+                if ct is not None:
+                    sources[w] = ct
             elif re.match(r'^(VCC|GND)_NET\d+$', w):
                 v = by_name.get('VDD' if w.startswith('VCC') else 'GND')
                 if v is not None:
@@ -656,6 +752,10 @@ def greenpak_nvm_section(part, nvm_path, bels, device_regs=None):
         pgen_table = DATASHEET_PGEN.get(greenpak_base(part), {})
         if bel["name"] in pgen_table:
             bel_bits[-1]["pgen"] = pgen_table[bel["name"]]
+
+    # MF-block counter BELs carry their register table directly
+    for name, ct in DATASHEET_CNT.get(greenpak_base(part), {}).items():
+        bel_bits.append({"name": name, "type": "GP_COUNT8_ADV", "cnt": ct})
     return {
         "bits": max(free, nbits),
         "default": os.path.abspath(nvm_path),

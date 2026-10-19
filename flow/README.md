@@ -153,9 +153,23 @@ Current limitations (honest status):
   mode value (LSB-first over registers 1280,1281,1283,1284,1282,
   1285,1286) is 3 for "LUT -> CNT/DLY" (LUT feeding the counter);
   "Single 4-bit LUT" = 0, "Single DFF" = 16, "Single CNT/DLY" = 1.
-- The MF counter/CNT-DLY macrocell (mode, clock source, counter
-  data) is DECODED (analysis/simulate_nvm.py prints it) but not
-  synthesizable from HDL yet.
+- The MF CNT/DLY counters are SYNTHESIZABLE: instantiate
+  GP_COUNT8_ADV directly (examples/counter_mf.v). Encoding:
+  block mode = 1 (counter only), 3 (LUT -> counter when the block's
+  LUT is also used), 7 (DFF -> counter); DLY/CNT function = CNT,
+  edge = both (the app's ground-truth defaults); clock source =
+  External (14) when the cell's CLK is connected, else the 2M OSC1
+  default (2 - the ground-truth default); COUNT_TO -> the 8-bit
+  counter data register. Constraint (real hardware): in a
+  LUT-shared block the counter's EXT_CLK matrix input IS the LUT's
+  IN1 - a shared-block counter with an external clock must tie both
+  to the same net, or use the OSC. UP/KEEP/POUT are not supported
+  (warned). verify.py excludes counter outputs from simulation
+  (the counting semantics are not modeled; the registers are
+  encoded at the extracted bit positions). The counter register
+  layout is datasheet-derived; the CNT0 registers themselves are
+  ground-truth validated (SLG46826-MF-DFF-test.gp6), the matrix
+  input/clock routing is best-effort from the block diagrams.
 - IO pin modes: the per-pin registers are extracted (device_regs/
   SLG46826_pinmodes.json) and output pads get their pull resistors
   cleared to floating - exactly what the ground-truth designs do.
@@ -168,9 +182,14 @@ Current limitations (honest status):
   input, push-pull 1x). Explicit pin-mode configuration (Schmitt,
   low-voltage, open-drain, pull strength) is not exposed to designs
   yet.
-- DFF cell variants not exercised by a test design: nQ outputs
-  (*I cells), latches (GP_DLATCH*). GP_DFFSR is exercised by
-  counter_rst and assembled as nRST (rst_set bit = 0).
+- DFF cell variants are exercised by examples/dff_variants.v:
+  GP_DFFI (the hardware Q/nQ output-select bit, with the INIT
+  polarity inverted at assembly since the param describes nQ's
+  power-up state) and GP_DLATCH (the hardware latch bit; simulated
+  as an edge-triggered element on both sides of the round-trip -
+  the encoding is checked, the level-sensitive transparency
+  semantics are not). GP_DFFSR is exercised by counter_rst and
+  assembled as nRST (rst_set bit = 0).
 - abc does not exploit cross-output structure as well as Go Configure's
   mapper (the app fits the plain 4-bit comparator in 11 cells); large
   designs may need manual structuring.

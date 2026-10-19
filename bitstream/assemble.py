@@ -140,6 +140,8 @@ def assemble(chipdb, routed, chipdb_path=''):
                 wire_pad[w] = b['name']
     stats = {'cells': 0, 'pips': 0, 'bits_set': 0,
              'connections': 0, 'unmapped_pips': 0, 'io_outputs': 0}
+    cnt_cells = {}          # counter BEL -> register table
+    pending_dff_modes = []  # (bel, dff) - written after counters are known
     written_fields = set()   # matrix fields written by routed pips
 
     def setbit(idx):
@@ -199,6 +201,24 @@ def assemble(chipdb, routed, chipdb_path=''):
                     clearbit(pg['data'] + b)
             stats['pgens'] = stats.get('pgens', 0) + 1
             continue
+        if ctype == 'GP_COUNT8_ADV':
+            # MF-block CNT/DLY counter: registers written after the
+            # PIP pass (the clock source depends on whether the
+            # external-clock wire was routed, and the block mode on
+            # whether the block's LUT/DFF is also used)
+            ct = entry.get('cnt')
+            if not ct:
+                print('  warn: BEL %s has no counter mode (cell %s)'
+                      % (bel, ctype), file=sys.stderr)
+                continue
+            cnt_cells[bel] = (ct, cname)
+            for port in ('UP', 'KEEP', 'POUT'):
+                if cell.get('ports', {}).get(port):
+                    print('  warn: %s port of %s is not supported by '
+                          'the MF counters (ignored)' % (port, cname),
+                          file=sys.stderr)
+            stats['counters'] = stats.get('counters', 0) + 1
+            continue
         if ctype.startswith('GP_DFF') or ctype.startswith('GP_DLATCH'):
             # DFF/latch mode of a LUT macrocell: set the mode select
             # and the DFF control bits ([7:4] of the truth byte;
@@ -209,7 +229,7 @@ def assemble(chipdb, routed, chipdb_path=''):
                 print('  warn: BEL %s has no DFF mode (cell %s)'
                       % (bel, ctype), file=sys.stderr)
                 continue
-            setbit(dff['mode'])
+            pending_dff_modes.append((bel, dff))
             def setflag(idx, flag):
                 if flag:
                     setbit(idx)
@@ -223,7 +243,13 @@ def assemble(chipdb, routed, chipdb_path=''):
                                                  'GP_DLATCHS', 'GP_DLATCHSI'))
             init = cell.get('params', {}).get('INIT')
             if init is not None:
-                setflag(dff['init'], str(init).strip('"') == '1')
+                # INIT is the power-up value of the cell's output port:
+                # for the *I (nQ) variants the hardware initial-
+                # polarity bit describes Q, so invert
+                init1 = str(init).strip('"') == '1'
+                if ctype.endswith('I'):
+                    init1 = not init1
+                setflag(dff['init'], init1)
             stats['dffs'] = stats.get('dffs', 0) + 1
             continue
         init = cell.get('params', {}).get('INIT')
@@ -325,6 +351,59 @@ def assemble(chipdb, routed, chipdb_path=''):
             clearbit(lo)
             clearbit(lo + 1)
             stats['bits_set'] += 1
+
+    # ---- MF-block counters + block-mode combination -----------------
+    # Block mode values (datasheet mode tables): 0 = LUT, 16 = DFF,
+    # 1 = counter only, 3 = LUT -> counter (LUT output feeds the
+    # counter's DLY_IN), 7 = DFF -> counter. The DFF mode bit (the
+    # 0x358 register) is NOT set when a counter shares the block.
+    all_cells = list(routed.get('cells', {}).values())
+    cnt_by_lutbel = {ct['lut_bel']: ct for ct, _ in cnt_cells.values()}
+
+    for bel, dff in pending_dff_modes:
+        ct = cnt_by_lutbel.get(bel)
+        if ct is not None:
+            for mb in ct['mode_bits'][:3]:     # DFF -> CNT = 7
+                setbit(mb)
+        else:
+            setbit(dff['mode'])
+
+    for belname, (ct, cnt_cname) in cnt_cells.items():
+        mb = ct['mode_bits']
+        r = ct['cnt_regs']
+        # block mode: counter present (bit 0); + LUT (bit 1) or DFF
+        # (bits 1,2 - written by the DFF pass above)
+        setbit(mb[0])
+        lut_used = any(c.get('bel') == ct['lut_bel'] and
+                       c.get('type') in ('GP_2LUT', 'GP_3LUT', 'GP_4LUT')
+                       for c in all_cells)
+        if lut_used:
+            setbit(mb[1])
+        # DLY/CNT function = 3 (CNT), edge mode = 0 (both edge - the
+        # app's ground-truth default)
+        setbit(r['mode'])
+        setbit(r['mode'] + 1)
+        # clock source: external (14) when THIS counter's CLK port is
+        # connected to a routed net (in a LUT-shared block the EXT_CLK
+        # wire also serves the LUT's IN1, so the wire alone is not
+        # proof), else the 2M OSC1 default (2 - the app's ground-truth
+        # default)
+        cnt_cell = routed.get('cells', {}).get(cnt_cname, {})
+        clk_net = (cnt_cell.get('conns') or {}).get('CLK', '')
+        clock = 14 if clk_net else 2
+        for b in range(4):
+            if (clock >> b) & 1:
+                setbit(r['clock'] + b)
+            else:
+                clearbit(r['clock'] + b)
+        # counter data = COUNT_TO (8 bits)
+        count_to = parse_param(cnt_cell.get('params', {}).get('COUNT_TO'), 8)
+        data = count_to if count_to is not None else 1
+        for b in range(8):
+            if (data >> b) & 1:
+                setbit(r['data'] + b)
+            else:
+                clearbit(r['data'] + b)
 
     return bits, stats
 

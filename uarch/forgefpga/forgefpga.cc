@@ -462,7 +462,11 @@ struct ForgeFpgaImpl : ViaductAPI
                 pool<IdString> pins;
                 for (auto pin : ctx->getBelPins(bel))
                     pins.insert(pin);
-                if (!pins.count(id_CLK) || !pins.count(id_D) || !pins.count(id_Q))
+                // clock: CLK (edge cells) or nCLK (latch cells);
+                // output: Q or nQ (the *I inverted-output variants)
+                bool has_clk = pins.count(id_CLK) || pins.count(id_nCLK);
+                bool has_q = pins.count(id_Q) || pins.count(id_nQ);
+                if (!has_clk || !pins.count(id_D) || !has_q)
                     return false;
                 if (cell_type == id_GP_DFFR && !pins.count(id_nRST))
                     return false;
@@ -506,6 +510,17 @@ struct ForgeFpgaImpl : ViaductAPI
                     f << ", ";
                 pfirst = false;
                 f << "\"" << kv.first.str(ctx) << "\": \"" << kv.second.to_string() << "\"";
+            }
+            // port -> net bindings (lets the assembler distinguish a
+            // cell's own connections from other cells sharing a wire)
+            f << "}, \"conns\": {";
+            bool cfirst = true;
+            for (const auto &kv : ci->ports) {
+                if (!cfirst)
+                    f << ", ";
+                cfirst = false;
+                f << "\"" << kv.first.str(ctx) << "\": \""
+                  << (kv.second.net ? kv.second.net->name.str(ctx) : std::string()) << "\"";
             }
             f << "}}";
         }

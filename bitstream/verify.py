@@ -87,7 +87,11 @@ def sim_yosys(ports, cells, invals, dffstate=None):
                     q = 0
                 if 'nSET' in c['conns'] and nets.get(c['conns']['nSET'][0], 1) == 0:
                     q = 1
-                obit = c['conns'].get('Q', [None])[0]
+                # the *I cell variants output the inverted Q (the
+                # hardware "Output Select Q/nQ" bit)
+                if 'nQ' in c['conns']:
+                    q = 1 - q
+                obit = c['conns'].get('Q', c['conns'].get('nQ', [None]))[0]
                 if obit is not None and nets.get(obit) != q:
                     nets[obit] = q
                     changed = True
@@ -167,6 +171,8 @@ def main():
     luts = {}
     pgen_out_wires = set()
     for belname, bb in bel_bits.items():
+        if 'truth_table_bits' not in bb:
+            continue    # MF-block counter BELs (not simulated)
         p = bel_ports.get(belname, {})
         pg = bb.get('pgen')
         if pg and bits[pg['mode']]:
@@ -320,6 +326,20 @@ def main():
     # assembler against the ground-truth-validated bit positions).
     excluded_labels = set()
     pgen_cells = [c for c in cells.values() if c['type'] == 'GP_PGEN']
+    # MF-block counters: sequential hardware the verifier does not
+    # simulate (the counter registers are encoded at the extracted
+    # bit positions; outputs excluded on both sides)
+    cnt_out_wires = {w for w in matrix.get('sources', {})
+                     if w.startswith('MF_CNT')}
+    for c in cells.values():
+        if c['type'] == 'GP_COUNT8_ADV':
+            pgen_cells = pgen_cells + [c]   # same exclusion mechanism
+    pgen_out_wires = pgen_out_wires | cnt_out_wires
+    # NOTE: GP_DLATCH* cells are simulated as edge-triggered state
+    # elements on BOTH sides - the round-trip still checks their
+    # encoding (latch mode bit, connections, INIT polarity), but the
+    # level-sensitive transparency semantics are not modeled (no
+    # ground truth or hardware validation yet)
     if pgen_cells or pgen_out_wires:
         pgen_bits = set()
         for c in pgen_cells:
@@ -342,7 +362,7 @@ def main():
             if driven_by_pgen:
                 excluded_labels.add(label)
         if excluded_labels:
-            print('note: PGEN-driven outputs excluded from simulation: %s'
+            print('note: PGEN/counter-driven outputs excluded from simulation: %s'
                   % ', '.join(sorted(excluded_labels)))
 
     ref_dffs = {cname: c for cname, c in cells.items() if is_dff_type(c['type'])}
@@ -364,7 +384,10 @@ def main():
         for combo in range(combos):
             base = {l: (combo >> i) & 1 for i, (b, l) in enumerate(other)}
             # initial states (INIT)
-            rstate = {cname: (1 if str(c['init']).strip('"') == '1' else 0)
+            rstate = {cname: ((1 if str(c['init']).strip('"') == '1' else 0)
+                               # *I cells: INIT is the nQ power-up value;
+                               # the tracked state is Q
+                               ^ (1 if 'nQ' in c['conns'] else 0))
                       for cname, c in ref_dffs.items()}
             istate = {bn: d['init'] for bn, d in dffs.items()}
             for t in range(cycles):
