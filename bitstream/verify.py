@@ -82,7 +82,8 @@ def sim_yosys(ports, cells, invals, dffstate=None):
             t = c['type']
             if is_dff_type(t):
                 q = dffstate.get(cname, 0)
-                if 'nRST' in c['conns'] and nets.get(c['conns']['nRST'][0], 1) == 0:
+                rst = c['conns'].get('nRST', c['conns'].get('nSR'))
+                if rst and nets.get(rst[0], 1) == 0:
                     q = 0
                 if 'nSET' in c['conns'] and nets.get(c['conns']['nSET'][0], 1) == 0:
                     q = 1
@@ -127,7 +128,8 @@ def sim_yosys(ports, cells, invals, dffstate=None):
         d = c['conns'].get('D', [None])[0]
         dff_in[cname] = (
             nets.get(d, 0) if isinstance(d, int) else 0,
-            nets.get(c['conns']['nRST'][0], 1) if 'nRST' in c['conns'] else 1,
+            nets.get(c['conns']['nRST'][0], 1) if 'nRST' in c['conns']
+            else nets.get(c['conns']['nSR'][0], 1) if 'nSR' in c['conns'] else 1,
             nets.get(c['conns']['nSET'][0], 1) if 'nSET' in c['conns'] else 1,
         )
     return outs, dff_in
@@ -170,6 +172,10 @@ def main():
                 'd': p.get('D', {}).get('wire'),
                 'nrst': p.get('nRST', {}).get('wire'),
                 'nset': p.get('nSET', {}).get('wire'),
+                # nRST/nSET share one pin on LUT3/MF slots: the rst_set
+                # bit selects which function the pin has (None = the
+                # MF 16BIT_0 block's two independent pins)
+                'rst_set': bits[d['rst_set']] if 'rst_set' in d else None,
                 'q': p.get('Q', {}).get('wire'),
                 'init': bits[d['init']],
                 'nq': bits[d['out_sel']],
@@ -192,6 +198,23 @@ def main():
     mi_fields = {w: f for w, f in fields.items() if not w.startswith('IOPAD')}
     vdd_wires = [w for w in sources if w.startswith('VCC_NET')]
 
+    def async_q(d, vals, q):
+        """Async set/reset override, respecting the rst_set mode bit
+        (LUT3/MF slots share one pin: low = nRST or nSET per the bit)."""
+        nr, ns = d['nrst'], d['nset']
+        if d['rst_set'] is None:      # independent pins (MF 16BIT_0)
+            if nr is not None and vals.get(nr, 1) == 0:
+                q = 0
+            if ns is not None and vals.get(ns, 1) == 0:
+                q = 1
+        elif d['rst_set']:            # shared pin, nSET function
+            if ns is not None and vals.get(ns, 1) == 0:
+                q = 1
+        else:                         # shared pin, nRST function
+            if nr is not None and vals.get(nr, 1) == 0:
+                q = 0
+        return q
+
     def eval_image(driven, dffq=None):
         vals = dict(driven)
         if dffq is None:
@@ -210,10 +233,7 @@ def main():
             # DFF macrocells (clock edges handled by the caller)
             for belname, d in dffs.items():
                 q = dffq.get(belname, d['init'])
-                if d['nrst'] and vals.get(d['nrst'], 1) == 0:
-                    q = 0
-                if d['nset'] and vals.get(d['nset'], 1) == 0:
-                    q = 1
+                q = async_q(d, vals, q)
                 if d['nq']:
                     q ^= 1
                 if vals.get(d['q']) != q:
@@ -317,11 +337,7 @@ def main():
                           for cname, v in rin.items()}
                 for bn, d in dffs.items():
                     q = ivals.get(d['d'], 0)
-                    if d['nrst'] and ivals.get(d['nrst'], 1) == 0:
-                        q = 0
-                    if d['nset'] and ivals.get(d['nset'], 1) == 0:
-                        q = 1
-                    istate[bn] = q
+                    istate[bn] = async_q(d, ivals, q)
                 # clock high: settle, compare outputs
                 high = dict(base)
                 for l in clk_labels:

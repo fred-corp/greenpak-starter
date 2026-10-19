@@ -124,22 +124,26 @@ flips), and only checks the logic the design actually uses.
 
 Current limitations (honest status):
 
-- Sequential logic is now encoded and verified (examples/counter.v:
-  DFF mode selects, control bits, initial polarity, unused resets tied
-  to VDD), but not yet ground-truth validated against a Go Configure
-  design that uses DFFs - a .gp6 with counters/flip-flops would close
-  that gap like DM8200_migrate.gp6 did for combinational logic.
+- Sequential logic is encoded and round-trip verified (examples/
+  counter.v with GP_DFF, examples/counter_rst.v with GP_DFFSR async
+  reset: DFF mode selects, control bits, initial polarity, unused
+  resets tied to VDD), but not yet ground-truth validated against a
+  Go Configure design that uses DFFs - a .gp6 with counters/flip-
+  flops would close that gap like DM8200_migrate.gp6 did for
+  combinational logic.
 - MF-block LUT truth ranges and sources are datasheet-derived but NOT
   ground-truth validated (the reference .gp6 design does not use MF
   LUTs); a Go Configure design using MF LUTs would close that gap.
-- DFF cell variants beyond GP_DFF/GP_DFFR/GP_DFFS (nQ outputs, latches,
-  GP_DFFSR) are assembled but not yet exercised by a test design.
-- IO pin mode registers (777+: input Schmitt/low-voltage, output
-  push-pull/open-drain) are not written; pads use the default-NVM
-  settings.
+- IO pin modes: the per-pin registers are extracted (device_regs/
+  SLG46826_pinmodes.json) and output pads get their pull resistors
+  cleared to floating - exactly what the ground-truth design does.
+  Everything else uses the default-NVM settings (digital input,
+  push-pull 1x; the matrix OE field enables the driver). Explicit
+  pin-mode configuration (Schmitt, low-voltage, open-drain, pull
+  strength) is not exposed to designs yet.
+- DFF cell variants not exercised by a test design: nQ outputs
+  (*I cells), latches (GP_DLATCH*). GP_DFFSR is exercised by
+  counter_rst and assembled as nRST (rst_set bit = 0).
 - abc does not exploit cross-output structure as well as Go Configure's
   mapper (the app fits the plain 4-bit comparator in 11 cells); large
   designs may need manual structuring.
-- IO pin mode registers (input Schmitt/low-voltage, output push-pull/
-  open-drain, 777+: per-pin config) are not written yet; pads use the
-  default-NVM settings.

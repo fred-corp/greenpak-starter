@@ -1,0 +1,99 @@
+{
+ "note": "2-bit fields at the given LSB bit index; GPO pins lack input_mode, some pins lack out_en (matrix OE field drives the pad)",
+ "pins": {
+  "IO0": {
+   "input_mode": 776,
+   "out_en": 783,
+   "output_mode": 778,
+   "pull_res": 780,
+   "pull_sel": 782
+  },
+  "IO1": {
+   "input_mode": 784,
+   "output_mode": 786,
+   "pull_res": 788,
+   "pull_sel": 790
+  },
+  "IO10": {
+   "input_mode": 888,
+   "output_mode": 890,
+   "pull_res": 892,
+   "pull_sel": 894
+  },
+  "IO11": {
+   "input_mode": 896,
+   "output_mode": 898,
+   "pull_res": 900,
+   "pull_sel": 902
+  },
+  "IO12": {
+   "input_mode": 904,
+   "output_mode": 906,
+   "pull_res": 908,
+   "pull_sel": 910
+  },
+  "IO13": {
+   "input_mode": 912,
+   "output_mode": 914,
+   "pull_res": 916,
+   "pull_sel": 918
+  },
+  "IO14": {
+   "input_mode": 920,
+   "output_mode": 922,
+   "pull_res": 924,
+   "pull_sel": 926
+  },
+  "IO2": {
+   "input_mode": 800,
+   "out_en": 807,
+   "output_mode": 802,
+   "pull_res": 804,
+   "pull_sel": 806
+  },
+  "IO3": {
+   "input_mode": 808,
+   "out_en": 815,
+   "output_mode": 810,
+   "pull_res": 812,
+   "pull_sel": 814
+  },
+  "IO4": {
+   "input_mode": 816,
+   "output_mode": 818,
+   "pull_res": 820,
+   "pull_sel": 822
+  },
+  "IO5": {
+   "input_mode": 824,
+   "output_mode": 826,
+   "pull_res": 828,
+   "pull_sel": 830
+  },
+  "IO6": {
+   "out_en": 855,
+   "output_mode": 850,
+   "pull_res": 852,
+   "pull_sel": 854
+  },
+  "IO7": {
+   "out_en": 863,
+   "output_mode": 858,
+   "pull_res": 860,
+   "pull_sel": 862
+  },
+  "IO8": {
+   "input_mode": 864,
+   "output_mode": 866,
+   "pull_res": 868,
+   "pull_sel": 870
+  },
+  "IO9": {
+   "input_mode": 880,
+   "output_mode": 882,
+   "pull_res": 884,
+   "pull_sel": 886
+  }
+ },
+ "table": "IO pin mode registers (datasheet Table 59)"
+}

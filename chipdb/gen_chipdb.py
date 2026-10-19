@@ -311,6 +311,7 @@ def greenpak_dff_ports(belname):
             return {'CLK': ('MI_L3_%d_0' % i, 'in'),
                     'nRST': ('MI_L3_%d_1' % i, 'in'),
                     'nSET': ('MI_L3_%d_1' % i, 'in'),
+                    'nSR': ('MI_L3_%d_1' % i, 'in'),
                     'D': ('MI_L3_%d_2' % i, 'in'),
                     'Q': ('MF_L3_%d' % i, 'out')}
         if i < 6:  # main LUT3 slots: D on IN1, nSET/nRST on IN2
@@ -318,6 +319,7 @@ def greenpak_dff_ports(belname):
                     'D': ('MI_L3_%d_1' % i, 'in'),
                     'nRST': ('MI_L3_%d_2' % i, 'in'),
                     'nSET': ('MI_L3_%d_2' % i, 'in'),
+                    'nSR': ('MI_L3_%d_2' % i, 'in'),
                     'Q': ('MF_L3_%d' % i, 'out')}
         return {}  # LUT3_6 = pipe delay slot
     if m4:
@@ -325,6 +327,7 @@ def greenpak_dff_ports(belname):
         return {'CLK': ('MI_L4_%s_0' % i, 'in'),
                 'nRST': ('MI_L4_%s_1' % i, 'in'),
                 'nSET': ('MI_L4_%s_2' % i, 'in'),
+                'nSR': ('MI_L4_%s_1' % i, 'in'),
                 'D': ('MI_L4_%s_3' % i, 'in'),
                 'Q': ('MF_L4_%s' % i, 'out')}
     return {}
@@ -494,6 +497,7 @@ def matrix_join(part, bels, device_regs):
     inputs = load(base + '_matrix_inputs.json')
     outputs = load(base + '_matrix_outputs.json')
     pins = load(base + '_pins.json')
+    pinmodes = load(base + '_pinmodes.json')
     if not (inputs and outputs):
         return None
 
@@ -505,6 +509,7 @@ def matrix_join(part, bels, device_regs):
     # same 6-bit field treatment.
     func2out = {o['function']: o['output'] for o in outputs['outputs']}
     io_oe = {}  # fabric->pad wire -> OE field bits ("IOx Digital Output OE")
+    pin_modes = {}  # pad BEL -> per-pin mode register bit positions
 
     sources = {}
     for bel in bels:
@@ -531,7 +536,7 @@ def matrix_join(part, bels, device_regs):
                 v = by_name.get('VDD' if w.startswith('VCC') else 'GND')
                 if v is not None:
                     sources[w] = v
-        if bel.get('type') == 'IOB' and pins:
+        if bel.get('type') in ('IOB', 'IOB_OUT') and pins:
             pkg = next(iter(pins['packages'].values()))
             # IOB names are "PIN<k>"; the pin-map keys are bare numbers
             func = pkg.get(re.sub(r'^PIN', '', bel['name']))
@@ -546,12 +551,17 @@ def matrix_join(part, bels, device_regs):
             oe = func2out.get('%s Digital Output OE' % func)
             if oe is not None:
                 io_oe[bel['ports']['IN']['wire']] = [6 * oe, 6 * oe + 5]
+            if pinmodes and func in pinmodes.get('pins', {}):
+                pm = dict(pinmodes['pins'][func])
+                pm['iofunc'] = func
+                pin_modes[bel['name']] = pm
     return {
         'model': 'field for matrix output n = bits [6n, 6n+5]; content '
                  '= Matrix Input Number (datasheet Tables 21/22)',
         'fields': fields,
         'sources': sources,
         'io_oe': io_oe,
+        'pin_modes': pin_modes,
     }
 
 

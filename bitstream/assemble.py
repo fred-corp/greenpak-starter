@@ -118,6 +118,7 @@ def assemble(chipdb, routed, chipdb_path=''):
     fields = matrix.get('fields', {})
     msrc = matrix.get('sources', {})
     io_oe = matrix.get('io_oe', {})
+    pin_modes = matrix.get('pin_modes', {})
     stats = {'cells': 0, 'pips': 0, 'bits_set': 0,
              'connections': 0, 'unmapped_pips': 0, 'io_outputs': 0}
     written_fields = set()   # matrix fields written by routed pips
@@ -243,6 +244,22 @@ def assemble(chipdb, routed, chipdb_path=''):
                         clearbit(lo + b)
                 written_fields.add(wire)
                 stats['bits_set'] += 1
+
+    # Pads driven by GP_OBUF: clear the pull resistors (floating).
+    # Ground-truth behavior: Go Configure's compiled design for this
+    # device clears exactly the pull-resistance bits on its output
+    # pins and leaves every other pin-mode register at the default
+    # (digital input / push-pull 1x; the matrix OE field enables the
+    # driver).
+    for cname, cell in routed.get('cells', {}).items():
+        if cell.get('type') != 'GP_OBUF':
+            continue
+        pm = pin_modes.get(cell.get('bel'), {})
+        lo = pm.get('pull_res')
+        if lo is not None:
+            clearbit(lo)
+            clearbit(lo + 1)
+            stats['bits_set'] += 1
 
     return bits, stats
 

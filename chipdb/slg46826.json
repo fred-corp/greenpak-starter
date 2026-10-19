@@ -924,6 +924,10 @@
      "dir": "in",
      "wire": "MI_L3_0_2"
     },
+    "nSR": {
+     "dir": "in",
+     "wire": "MI_L3_0_2"
+    },
     "Q": {
      "dir": "out",
      "wire": "MF_L3_0"
@@ -966,6 +970,10 @@
      "wire": "MI_L3_1_2"
     },
     "nSET": {
+     "dir": "in",
+     "wire": "MI_L3_1_2"
+    },
+    "nSR": {
      "dir": "in",
      "wire": "MI_L3_1_2"
     },
@@ -1014,6 +1022,10 @@
      "dir": "in",
      "wire": "MI_L3_2_2"
     },
+    "nSR": {
+     "dir": "in",
+     "wire": "MI_L3_2_2"
+    },
     "Q": {
      "dir": "out",
      "wire": "MF_L3_2"
@@ -1056,6 +1068,10 @@
      "wire": "MI_L3_3_2"
     },
     "nSET": {
+     "dir": "in",
+     "wire": "MI_L3_3_2"
+    },
+    "nSR": {
      "dir": "in",
      "wire": "MI_L3_3_2"
     },
@@ -1104,6 +1120,10 @@
      "dir": "in",
      "wire": "MI_L3_4_2"
     },
+    "nSR": {
+     "dir": "in",
+     "wire": "MI_L3_4_2"
+    },
     "Q": {
      "dir": "out",
      "wire": "MF_L3_4"
@@ -1146,6 +1166,10 @@
      "wire": "MI_L3_5_2"
     },
     "nSET": {
+     "dir": "in",
+     "wire": "MI_L3_5_2"
+    },
+    "nSR": {
      "dir": "in",
      "wire": "MI_L3_5_2"
     },
@@ -1215,6 +1239,10 @@
      "dir": "in",
      "wire": "MI_L3_7_1"
     },
+    "nSR": {
+     "dir": "in",
+     "wire": "MI_L3_7_1"
+    },
     "D": {
      "dir": "in",
      "wire": "MI_L3_7_2"
@@ -1257,6 +1285,10 @@
      "wire": "MI_L3_8_1"
     },
     "nSET": {
+     "dir": "in",
+     "wire": "MI_L3_8_1"
+    },
+    "nSR": {
      "dir": "in",
      "wire": "MI_L3_8_1"
     },
@@ -1305,6 +1337,10 @@
      "dir": "in",
      "wire": "MI_L3_9_1"
     },
+    "nSR": {
+     "dir": "in",
+     "wire": "MI_L3_9_1"
+    },
     "D": {
      "dir": "in",
      "wire": "MI_L3_9_2"
@@ -1347,6 +1383,10 @@
      "wire": "MI_L3_10_1"
     },
     "nSET": {
+     "dir": "in",
+     "wire": "MI_L3_10_1"
+    },
+    "nSR": {
      "dir": "in",
      "wire": "MI_L3_10_1"
     },
@@ -1395,6 +1435,10 @@
      "dir": "in",
      "wire": "MI_L3_11_1"
     },
+    "nSR": {
+     "dir": "in",
+     "wire": "MI_L3_11_1"
+    },
     "D": {
      "dir": "in",
      "wire": "MI_L3_11_2"
@@ -1440,6 +1484,10 @@
      "dir": "in",
      "wire": "MI_L3_12_1"
     },
+    "nSR": {
+     "dir": "in",
+     "wire": "MI_L3_12_1"
+    },
     "D": {
      "dir": "in",
      "wire": "MI_L3_12_2"
@@ -1482,6 +1530,10 @@
      "wire": "MI_L3_13_1"
     },
     "nSET": {
+     "dir": "in",
+     "wire": "MI_L3_13_1"
+    },
+    "nSR": {
      "dir": "in",
      "wire": "MI_L3_13_1"
     },
@@ -1533,6 +1585,10 @@
     "nSET": {
      "dir": "in",
      "wire": "MI_L4_0_2"
+    },
+    "nSR": {
+     "dir": "in",
+     "wire": "MI_L4_0_1"
     },
     "D": {
      "dir": "in",
@@ -23463,6 +23519,14 @@
      444,
      449
     ],
+    "IOPAD8_IN": [
+     456,
+     461
+    ],
+    "IOPAD9_IN": [
+     462,
+     467
+    ],
     "IOPAD10_IN": [
      468,
      473
@@ -23575,6 +23639,116 @@
      546,
      551
     ]
+   },
+   "pin_modes": {
+    "PIN2": {
+     "input_mode": 776,
+     "out_en": 783,
+     "output_mode": 778,
+     "pull_res": 780,
+     "pull_sel": 782,
+     "iofunc": "IO0"
+    },
+    "PIN3": {
+     "input_mode": 784,
+     "output_mode": 786,
+     "pull_res": 788,
+     "pull_sel": 790,
+     "iofunc": "IO1"
+    },
+    "PIN4": {
+     "input_mode": 800,
+     "out_en": 807,
+     "output_mode": 802,
+     "pull_res": 804,
+     "pull_sel": 806,
+     "iofunc": "IO2"
+    },
+    "PIN5": {
+     "input_mode": 808,
+     "out_en": 815,
+     "output_mode": 810,
+     "pull_res": 812,
+     "pull_sel": 814,
+     "iofunc": "IO3"
+    },
+    "PIN6": {
+     "input_mode": 816,
+     "output_mode": 818,
+     "pull_res": 820,
+     "pull_sel": 822,
+     "iofunc": "IO4"
+    },
+    "PIN7": {
+     "input_mode": 824,
+     "output_mode": 826,
+     "pull_res": 828,
+     "pull_sel": 830,
+     "iofunc": "IO5"
+    },
+    "PIN10": {
+     "out_en": 855,
+     "output_mode": 850,
+     "pull_res": 852,
+     "pull_sel": 854,
+     "iofunc": "IO6"
+    },
+    "PIN12": {
+     "out_en": 863,
+     "output_mode": 858,
+     "pull_res": 860,
+     "pull_sel": 862,
+     "iofunc": "IO7"
+    },
+    "PIN13": {
+     "input_mode": 864,
+     "output_mode": 866,
+     "pull_res": 868,
+     "pull_sel": 870,
+     "iofunc": "IO8"
+    },
+    "PIN15": {
+     "input_mode": 880,
+     "output_mode": 882,
+     "pull_res": 884,
+     "pull_sel": 886,
+     "iofunc": "IO9"
+    },
+    "PIN16": {
+     "input_mode": 888,
+     "output_mode": 890,
+     "pull_res": 892,
+     "pull_sel": 894,
+     "iofunc": "IO10"
+    },
+    "PIN17": {
+     "input_mode": 896,
+     "output_mode": 898,
+     "pull_res": 900,
+     "pull_sel": 902,
+     "iofunc": "IO11"
+    },
+    "PIN18": {
+     "input_mode": 904,
+     "output_mode": 906,
+     "pull_res": 908,
+     "pull_sel": 910,
+     "iofunc": "IO12"
+    },
+    "PIN19": {
+     "input_mode": 912,
+     "output_mode": 914,
+     "pull_res": 916,
+     "pull_sel": 918,
+     "iofunc": "IO13"
+    },
+    "PIN20": {
+     "input_mode": 920,
+     "output_mode": 922,
+     "pull_res": 924,
+     "pull_sel": 926,
+     "iofunc": "IO14"
+    }
    }
   }
  }
