@@ -94,6 +94,18 @@ def cell_truth(cell):
     return init
 
 
+def parse_param(value, width):
+    """Parse a cell parameter value from the routed report: yosys
+    emits fixed-width params as raw binary digit strings (e.g.
+    PATTERN_LEN as '01000'); anything else parses as a number."""
+    if value is None:
+        return None
+    s = str(value)
+    if len(s) == width and set(s) <= {'0', '1'}:
+        return int(s, 2)
+    return int(s, 0)
+
+
 def parse_init(init, width):
     """Parse a LUT INIT value from the nextpnr report. yosys emits
     truth-table INIT as a raw binary digit string ("10110010") whose
@@ -157,6 +169,36 @@ def assemble(chipdb, routed, chipdb_path=''):
             continue
         stats['cells'] += 1
         ctype = cell.get('type', '')
+        if ctype == 'GP_PGEN':
+            # Pattern generator (LUT2_3 slot; ground-truth validated):
+            # mode register 1235; registers 1164-1167 = pattern size
+            # (PATTERN_LEN-1, i.e. the GUI "bit range" high index);
+            # registers 1168-1183 = the 16-bit PATTERN_DATA (GUI
+            # pattern read LSB-first). CLK/nRST are matrix
+            # connections on the slot's IN0/IN1 wires.
+            pg = entry.get('pgen')
+            if not pg:
+                print('  warn: BEL %s has no PGEN mode (cell %s)'
+                      % (bel, ctype), file=sys.stderr)
+                continue
+            setbit(pg['mode'])
+            plen = parse_param(cell.get('params', {}).get('PATTERN_LEN'), 5)
+            pdata = parse_param(cell.get('params', {}).get('PATTERN_DATA'), 16)
+            size = (plen - 1) if plen is not None else 15
+            size = max(0, min(15, size))
+            for b in range(4):
+                if (size >> b) & 1:
+                    setbit(pg['size'] + b)
+                else:
+                    clearbit(pg['size'] + b)
+            data = (pdata & 0xFFFF) if pdata is not None else 0
+            for b in range(16):
+                if (data >> b) & 1:
+                    setbit(pg['data'] + b)
+                else:
+                    clearbit(pg['data'] + b)
+            stats['pgens'] = stats.get('pgens', 0) + 1
+            continue
         if ctype.startswith('GP_DFF') or ctype.startswith('GP_DLATCH'):
             # DFF/latch mode of a LUT macrocell: set the mode select
             # and the DFF control bits ([7:4] of the truth byte;

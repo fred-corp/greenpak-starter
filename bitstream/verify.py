@@ -161,10 +161,17 @@ def main():
 
     # LUTs and DFFs decoded from the image. A macrocell whose DFF mode
     # select bit is set is a DFF; otherwise it is a LUT (truth table).
+    # A PGEN-mode macrocell (mode register 1235 on the LUT2_3 slot) is
+    # sequential hardware the verifier does not simulate - excluded.
     dffs = {}
     luts = {}
+    pgen_out_wires = set()
     for belname, bb in bel_bits.items():
         p = bel_ports.get(belname, {})
+        pg = bb.get('pgen')
+        if pg and bits[pg['mode']]:
+            pgen_out_wires.add(p.get('OUT', {}).get('wire'))
+            continue
         d = bb.get('dff')
         if d and bits[d['mode']]:
             dffs[belname] = {
@@ -294,13 +301,49 @@ def main():
     def image_outputs(vals):
         out = {}
         for b, label in top_out:
+            if label in excluded_labels:
+                continue
             bel = bit_pad.get(b)
             if not bel or bel not in iob_wires:
                 continue
             w = iob_wires[bel][1]
             if w in fields:
-                out[label] = vals.get(inv_sources.get(field_val(w)), 0)
+                srcw = inv_sources.get(field_val(w))
+                if srcw in pgen_out_wires:
+                    continue
+                out[label] = vals.get(srcw, 0)
         return out
+
+    # Outputs driven by a pattern generator are excluded from the
+    # comparison on both sides (sequential hardware the verifier does
+    # not simulate; the PGEN registers themselves are checked by the
+    # assembler against the ground-truth-validated bit positions).
+    excluded_labels = set()
+    pgen_cells = [c for c in cells.values() if c['type'] == 'GP_PGEN']
+    if pgen_cells or pgen_out_wires:
+        pgen_bits = set()
+        for c in pgen_cells:
+            ob = c['conns'].get('OUT', [None])[0]
+            if isinstance(ob, int):
+                pgen_bits.add(ob)
+        for b, label in top_out:
+            driven_by_pgen = b in pgen_bits
+            if not driven_by_pgen:
+                for c in cells.values():
+                    if c['type'] == 'GP_OBUF' and c['conns'].get('OUT', [None])[0] == b \
+                            and c['conns'].get('IN', [None])[0] in pgen_bits:
+                        driven_by_pgen = True
+                        break
+            bel = bit_pad.get(b)
+            if bel and bel in iob_wires:
+                w = iob_wires[bel][1]
+                if w in fields and inv_sources.get(field_val(w)) in pgen_out_wires:
+                    driven_by_pgen = True
+            if driven_by_pgen:
+                excluded_labels.add(label)
+        if excluded_labels:
+            print('note: PGEN-driven outputs excluded from simulation: %s'
+                  % ', '.join(sorted(excluded_labels)))
 
     ref_dffs = {cname: c for cname, c in cells.items() if is_dff_type(c['type'])}
     mism = 0

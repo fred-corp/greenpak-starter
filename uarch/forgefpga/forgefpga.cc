@@ -430,10 +430,11 @@ struct ForgeFpgaImpl : ViaductAPI
             return id_IOB;
         if (cell_type.in(id_GP_2LUT, id_GP_3LUT, id_GP_4LUT))
             return id_GP_LUT;
-        // GP_DFF*/GP_DLATCH* live in the LUT macrocells (DFF mode)
+        // GP_DFF*/GP_DLATCH*/GP_PGEN live in the LUT macrocells
         {
             std::string t = cell_type.str(ctx);
-            if (t.rfind("GP_DFF", 0) == 0 || t.rfind("GP_DLATCH", 0) == 0)
+            if (t.rfind("GP_DFF", 0) == 0 || t.rfind("GP_DLATCH", 0) == 0 ||
+                cell_type == id_GP_PGEN)
                 return id_GP_LUT;
         }
         return cell_type;
@@ -469,6 +470,10 @@ struct ForgeFpgaImpl : ViaductAPI
                     return false;
                 return bel_type.in(id_GP_2LUT, id_GP_3LUT, id_GP_4LUT);
             }
+            // The pattern generator lives in the dedicated LUT2_3/PGEN
+            // slot (registers 1164-1183, mode select 1235)
+            if (cell_type == id_GP_PGEN)
+                return ctx->getBelName(bel).str(ctx) == "LUT2_3";
         }
         return bel_type == cell_type;
     }

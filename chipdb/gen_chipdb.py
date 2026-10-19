@@ -259,6 +259,16 @@ DATASHEET_TRUTH = {
 # (Matrix A/B/C/D = IN3/IN2/IN1/IN0 for 16BIT, IN2/IN1/IN0 for 8BIT;
 # main LUT3 slots: IN0=CLK, IN1=D, IN2=nRST/nSET; LUT2 slots: IN0=CLK,
 # IN1=D) - encoded in greenpak_scaffold().
+# Pattern generator (LUT2_3 slot; ground-truth validated by
+# LUT2-LUT3.gp6): mode = register 1235; registers 1164-1167 hold the
+# pattern size (the GUI "bit range n:0" stores the high index n =
+# PATTERN_LEN-1); registers 1168-1183 hold the 16-bit pattern data
+# (GUI pattern read LSB-first). CLK = matrix OUT2 (IN0), nRST = OUT3
+# (IN1); output = matrix source 17 (LUT2_3_PGEN_OUT).
+DATASHEET_PGEN = {
+    'SLG46826': {'LUT2_3': {'mode': 1235, 'size': 1164, 'data': 1168}},
+}
+
 DATASHEET_DFF = {
     'SLG46826': {
         'LUT2_0': {'mode': 1232, 'latch': 1155, 'out_sel': 1154, 'init': 1153},
@@ -412,6 +422,14 @@ def greenpak_scaffold(part="SLG46826V", nvm_path=None, n2=16, n3=16, n4=8, ndff=
             continue
         for pname, (wire, pdir) in greenpak_dff_ports(bel['name']).items():
             bel['ports'][pname] = {'dir': pdir, 'wire': wire}
+
+    # Pattern-generator ports on the LUT2_3/PGEN slot (GP_PGEN cells
+    # bind CLK/nRST/OUT; the wires are the slot's matrix inputs)
+    pgen_table = DATASHEET_PGEN.get(greenpak_base(part), {})
+    for bel in bels:
+        if bel['name'] in pgen_table:
+            bel['ports']['CLK'] = {'dir': 'in', 'wire': 'MI_L2_3_0'}
+            bel['ports']['nRST'] = {'dir': 'in', 'wire': 'MI_L2_3_1'}
 
     # Switch matrix crossbar (real crosspoint set pending extraction).
     # matrix sources: macrocell outputs AND the constant nets - in
@@ -635,6 +653,9 @@ def greenpak_nvm_section(part, nvm_path, bels, device_regs=None):
         })
         if bel["name"] in dff_table:
             bel_bits[-1]["dff"] = dff_table[bel["name"]]
+        pgen_table = DATASHEET_PGEN.get(greenpak_base(part), {})
+        if bel["name"] in pgen_table:
+            bel_bits[-1]["pgen"] = pgen_table[bel["name"]]
     return {
         "bits": max(free, nbits),
         "default": os.path.abspath(nvm_path),

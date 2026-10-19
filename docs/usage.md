@@ -156,29 +156,42 @@ there in the routed report.
 
 ## What is real vs scaffold (be honest with yourself)
 
-VALIDATED (byte-level against real designs):
-- LUT truth-table registers (combination block) for SLG46826/46824
-- NVM bit order, partNumber mapping, matrix field formula
-EXTRACTED, pending the final join:
-- matrix connection source lists (globalsImpl corpus)
-- MF-block, pad, analog register groups
-SCAFFOLD (structure right, coordinates generic):
-- chipdb fabric sizes/crossbars until the joins land
-- assembler matrix pass
+GROUND-TRUTH VALIDATED (register-for-register against Go
+Configure-compiled .gp6 designs), SLG46826/SLG46824:
+- LUT truth tables: main macrocells and multifunction blocks
+- matrix connections (6-bit field per matrix output = Matrix Input
+  Number, datasheet Tables 21/22)
+- DFF mode: main-macrocell mode selects + control bits, and MF-block
+  DFF mode + port mapping
+- PGEN registers (synthesizable: instantiate GP_PGEN -
+  flow/examples/pgen_test.v)
+- pin modes: output pulls cleared, per-pad-class output enables
+ROUND-TRIP VERIFIED (every assembled image re-decoded and compared
+against the yosys netlist for all input combinations; clocked
+cycles for sequential designs): everything above plus async-reset
+DFFs (GP_DFFSR)
+DECODED, not synthesizable from HDL yet:
+- MF-block CNT/DLY counters (mode/clock/data registers)
+SCAFFOLD:
+- other GreenPAK families (GP3/4/5) chipdbs; ForgeFPGA bitstream
+- latch and nQ DFF variants are assembled but not exercised by a
+  test design
 
-Until the matrix join lands, generated images contain correct LUT truth
-bits at real device registers but not yet the connection bits; do not
-flash them.
+Assembled SLG46826/SLG46824 images contain the full design encoding
+at ground-truth-validated register positions; the remaining
+hardware-side caveat is first-silicon verification of the flasher
+sequence (shadow mode is reversible and safe to experiment with).
 
 ## What Go Configure files help most
 
 Every .gp design file the app saves contains the compiled NVM, so
 files created in the GUI double as ground truth. Most useful:
-- one design per device family (SLG46826 done; SLG47004/SLG47125/
-  SLG47920 designs would validate the ForgeFPGA path)
-- designs that use specific features: MF LUTs, counters (CNT/DLY),
-  pipe delay, ACMP, different IO modes (each validates one more
-  register group)
+- one design per device family (SLG46826 done: combinational, MF
+  LUT/DFF/counter, main-macrocell DFF and PGEN all covered; SLG47004/
+  SLG47125/SLG47920 designs would validate the ForgeFPGA path)
+- designs that use features not yet covered: pipe delay, ripple
+  counters, ACMPs, OSC configs, different IO modes (each validates
+  one more register group)
 - the exported programmer files (.hex/.gpb) for a design if available
   (validates the container format)
 

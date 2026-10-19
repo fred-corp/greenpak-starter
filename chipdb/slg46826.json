@@ -882,6 +882,14 @@
     "OUT": {
      "dir": "out",
      "wire": "MF_L2_3"
+    },
+    "CLK": {
+     "dir": "in",
+     "wire": "MI_L2_3_0"
+    },
+    "nRST": {
+     "dir": "in",
+     "wire": "MI_L2_3_1"
     }
    }
   },
@@ -22943,7 +22951,12 @@
      1166,
      1167
     ],
-    "source": "datasheet Table 59 (validated)"
+    "source": "datasheet Table 59 (validated)",
+    "pgen": {
+     "mode": 1235,
+     "size": 1164,
+     "data": 1168
+    }
    },
    {
     "name": "LUT3_0",

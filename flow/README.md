@@ -127,12 +127,26 @@ Current limitations (honest status):
 - Sequential logic is encoded and round-trip verified (examples/
   counter.v with GP_DFF, examples/counter_rst.v with GP_DFFSR async
   reset: DFF mode selects, control bits, initial polarity, unused
-  resets tied to VDD). The MF-block DFF mode is GROUND-TRUTH
-  VALIDATED (SLG46826-MF-DFF-test.gp6): the "Single DFF" mode bit is
-  exactly the app's 0x358 register (1339 for 8BIT_1 etc.), the DFF
-  port mapping is CLK=IN0 / nSET-nRST=IN1 / D=IN2, and the control
-  bits are [7:4] of the block's LUT truth byte - all as modeled.
-  The main-macrocell DFF registers remain datasheet-derived.
+  resets tied to VDD). BOTH DFF layers are GROUND-TRUTH VALIDATED:
+  the MF-block DFF mode by SLG46826-MF-DFF-test.gp6 (mode = the
+  app's 0x358 register bit, ports CLK=IN0/nSET-nRST=IN1/D=IN2,
+  control bits [7:4] of the truth byte), and the main-macrocell DFF
+  mode by LUT2-LUT3.gp6 (LUT2_2 slot: mode bit 1234, control bits
+  [3:1] of the truth byte - 1163/1162/1161, ports CLK=IN0/D=IN1,
+  no reset input) - all exactly as modeled in DATASHEET_DFF.
+- The PGEN (LUT2_3 slot) is GROUND-TRUTH VALIDATED (LUT2-LUT3.gp6)
+  AND SYNTHESIZABLE: instantiate GP_PGEN directly (yosys does not
+  infer it) - see examples/pgen_test.v. Encoding: mode = register
+  1235; registers 1164-1167 = pattern size (PATTERN_LEN-1, the GUI
+  "bit range n:0" stores the high index n); registers 1168-1183 =
+  the 16-bit PATTERN_DATA (GUI pattern read LSB-first:
+  "01000001" -> 0x0082); CLK = matrix OUT2, nRST = OUT3, output =
+  matrix source 17. verify.py excludes PGEN-driven outputs from the
+  simulation (sequential hardware; the registers themselves are
+  encoded at the ground-truth-validated bit positions). This also
+  explains the original extractor's LUT3_0 confusion: the
+  consecutive 1164-1183 range is LUT2_3 truth + PGEN size + PGEN
+  data, not one 16-bit truth table.
 - MF-block LUTs are GROUND-TRUTH VALIDATED (SLG46826-MF-DFF-test.gp6):
   the 16BIT_0 block's 4-bit LUT truth decodes at bits 1288-1303 and
   its inputs are matrix outputs OUT30-33. New knowledge: the block
